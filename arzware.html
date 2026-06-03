@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arzware — Digital Systems Atelier</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --c-bg: #0e0e0e;
+            --c-surface: #1a1a1a;
+            --c-text: #e8e4de;
+            --c-text-dim: #7a756d;
+            --c-accent: #c4a882;
+            --c-accent2: #8b7355;
+            --c-highlight: #f0ebe3;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Space Grotesk', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; background: var(--c-bg); }
+        body {
+            background: var(--c-bg);
+            color: var(--c-text);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #three-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .layer-blur {
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 2;
+            pointer-events: none;
+            mask-image: radial-gradient(circle 260px at var(--x, 50%) var(--y, 50%), transparent 0%, transparent 32%, black 100%);
+            -webkit-mask-image: radial-gradient(circle 260px at var(--x, 50%) var(--y, 50%), transparent 0%, transparent 32%, black 100%);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 3;
+            opacity: 0.02;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.006;
+            background: repeating-conic-gradient(var(--c-text) 0.00015%, transparent 0.0004%, transparent 0.00075%, var(--c-text) 0.001%);
+            animation: grainShift 0.5s steps(1) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate3d(0, 0, 0); }
+            25% { transform: translate3d(-2%, 3%, 0); }
+            50% { transform: translate3d(1%, -2%, 0); }
+            75% { transform: translate3d(-3%, 1%, 0); }
+            100% { transform: translate3d(2%, -1%, 0); }
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2.5rem 3.5rem;
+            pointer-events: auto;
+        }
+        .nav-brand {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--c-text);
+            text-decoration: none;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .nav-brand:hover { color: var(--c-accent); }
+        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-link {
+            font-size: 0.75rem;
+            letter-spacing: 0.04em;
+            color: var(--c-text-dim);
+            text-decoration: none;
+            transition: color 0.4s, letter-spacing 0.4s;
+            font-weight: 300;
+            position: relative;
+        }
+        .nav-link:hover { color: var(--c-highlight); letter-spacing: 0.1em; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--c-accent);
+            transition: width 0.4s var(--ease);
+        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-idx {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            color: var(--c-accent2);
+            margin-right: 0.4rem;
+            opacity: 0.5;
+        }
+
+        .scroll-stage {
+            position: relative;
+            z-index: 10;
+        }
+        .section {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(0, 0.92fr) minmax(280px, 0.58fr);
+            align-items: center;
+            gap: clamp(2rem, 7vw, 8rem);
+            padding: 8rem 3.5rem 6rem;
+        }
+        .section-content {
+            max-width: 680px;
+            opacity: 0;
+            transform: translateY(26px);
+            transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+        }
+        .section.is-visible .section-content { opacity: 1; transform: translateY(0); }
+        .section-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--c-accent);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(196, 168, 130, 0.15);
+            border-radius: 2rem;
+            width: fit-content;
+            background: rgba(14, 14, 14, 0.22);
+            backdrop-filter: blur(8px);
+        }
+        .section-kicker::before { content: '◈'; font-size: 0.5rem; color: var(--c-accent); }
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 7vw, 6.1rem);
+            line-height: 1.02;
+            font-weight: 400;
+            letter-spacing: -0.035em;
+            color: var(--c-highlight);
+            margin-bottom: 2rem;
+        }
+        .section-title em {
+            font-style: italic;
+            color: var(--c-accent);
+        }
+        .section-title .thin {
+            display: block;
+            font-family: var(--font-sans);
+            font-size: 0.72em;
+            font-weight: 300;
+            color: var(--c-text-dim);
+            letter-spacing: 0.02em;
+        }
+        .section-body {
+            max-width: 430px;
+            font-size: 0.96rem;
+            line-height: 1.9;
+            color: var(--c-text-dim);
+            font-weight: 300;
+            border-left: 2px solid rgba(196, 168, 130, 0.2);
+            padding-left: 1.2rem;
+            margin-bottom: 2.2rem;
+        }
+        .section-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+        .btn-main, .btn-ghost {
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            padding: 0.9rem 2rem;
+            text-decoration: none;
+            border-radius: 3rem;
+            transition: all 0.5s var(--ease);
+        }
+        .btn-main {
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            color: var(--c-highlight);
+            border: 1.5px solid var(--c-accent);
+        }
+        .btn-main::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            left: -100%;
+            background: var(--c-accent);
+            transition: left 0.5s var(--ease);
+            z-index: -1;
+        }
+        .btn-main:hover::before { left: 0; }
+        .btn-main:hover { color: var(--c-bg); transform: translateY(-2px); box-shadow: 0 10px 40px rgba(196, 168, 130, 0.25); }
+        .btn-ghost { color: var(--c-text-dim); border: 1.5px solid rgba(122, 117, 109, 0.2); }
+        .btn-ghost:hover { border-color: var(--c-accent); color: var(--c-accent); transform: translateY(-2px); }
+
+        .section-card {
+            justify-self: end;
+            width: min(410px, 100%);
+            padding: 1.4rem;
+            border: 1px solid rgba(196, 168, 130, 0.14);
+            background: linear-gradient(135deg, rgba(26,26,26,0.46), rgba(14,14,14,0.14));
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(36px) scale(0.98);
+            transition: opacity 0.9s var(--ease) 0.12s, transform 0.9s var(--ease) 0.12s;
+        }
+        .section.is-visible .section-card { opacity: 1; transform: translateY(0) scale(1); }
+        .card-index {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.16em;
+            color: var(--c-accent2);
+            margin-bottom: 1.25rem;
+        }
+        .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-style: italic;
+            color: var(--c-accent);
+            margin-bottom: 1rem;
+        }
+        .card-list { list-style: none; display: grid; gap: 0.85rem; }
+        .card-list li {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid rgba(196, 168, 130, 0.09);
+            font-size: 0.78rem;
+            line-height: 1.55;
+            color: var(--c-text-dim);
+        }
+        .card-list li span:first-child { color: var(--c-highlight); }
+        .card-list li span:last-child { text-align: right; max-width: 52%; }
+
+        .morph-info {
+            position: fixed;
+            right: 3.5rem;
+            top: 7.4rem;
+            z-index: 20;
+            text-align: right;
+            pointer-events: none;
+        }
+        .morph-label {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--c-text-dim);
+            margin-bottom: 0.5rem;
+        }
+        .morph-name {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-style: italic;
+            color: var(--c-accent);
+            letter-spacing: -0.02em;
+        }
+        .morph-counter {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            color: var(--c-accent2);
+            margin-top: 0.8rem;
+            letter-spacing: 0.1em;
+        }
+        .morph-progress-bar {
+            width: 100px;
+            height: 2px;
+            background: rgba(196, 168, 130, 0.1);
+            margin-top: 1rem;
+            margin-left: auto;
+            border-radius: 1px;
+            overflow: hidden;
+        }
+        .morph-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--c-accent);
+            border-radius: 1px;
+        }
+        .footer-left {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .nav { padding: 1.5rem 2rem; }
+            .nav-links { display: none; }
+            .section {
+                grid-template-columns: 1fr;
+                padding: 7rem 2rem 7rem;
+                gap: 2rem;
+            }
+            .section-card { justify-self: start; }
+            .morph-info { right: 2rem; top: 5.8rem; }
+            .morph-name { font-size: 1.5rem; }
+            .footer-left { left: 2rem; bottom: 1.8rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .grain-overlay { animation: none; }
+            .section-content, .section-card { transition: none; opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="three-container"></div>
+    <div class="layer-blur"></div>
+    <div class="noise-overlay"></div>
+    <div class="grain-overlay"></div>
+
+    <nav class="nav">
+        <a href="#hero" class="nav-brand">Arzware</a>
+        <div class="nav-links">
+            <a href="#systems" class="nav-link"><span class="nav-idx">01</span>Systems</a>
+            <a href="#automation" class="nav-link"><span class="nav-idx">02</span>Automation</a>
+            <a href="#ai" class="nav-link"><span class="nav-idx">03</span>AI Tools</a>
+            <a href="#contact" class="nav-link"><span class="nav-idx">04</span>Inquire</a>
+        </div>
+    </nav>
+
+    <main class="scroll-stage">
+        <section class="section is-visible" id="hero" data-shape="Digital Core">
+            <div class="section-content">
+                <div class="section-kicker">Digital Systems Agency</div>
+                <h1 class="section-title"><span class="thin">We build</span>software,<br><em>workflows</em></h1>
+                <p class="section-body">Arzware turns business ideas into practical digital systems — websites, platforms, dashboards, automations, AI tools, and client-ready workflows that help teams operate smarter.</p>
+                <div class="section-actions">
+                    <a class="btn-main" href="#systems">Explore work →</a>
+                    <a class="btn-ghost" href="#contact">Start a project</a>
+                </div>
+            </div>
+            <aside class="section-card">
+                <div class="card-index">ARZWARE / 00</div>
+                <div class="card-title">from dust to system</div>
+                <ul class="card-list">
+                    <li><span>Focus</span><span>websites, software, automation, AI</span></li>
+                    <li><span>Method</span><span>plan, build, launch, improve</span></li>
+                    <li><span>Output</span><span>useful digital infrastructure</span></li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="section" id="systems" data-shape="Interface Field">
+            <div class="section-content">
+                <div class="section-kicker">Web & Software</div>
+                <h2 class="section-title"><span class="thin">Interfaces that</span>become<br><em>systems</em></h2>
+                <p class="section-body">We build websites, dashboards, client portals, admin panels, forms, and custom applications that are structured for real business use — not just presentation.</p>
+            </div>
+            <aside class="section-card">
+                <div class="card-index">SECTION / 01</div>
+                <div class="card-title">software layer</div>
+                <ul class="card-list">
+                    <li><span>Frontend</span><span>responsive interfaces and reusable components</span></li>
+                    <li><span>Backend</span><span>APIs, databases, auth, and integrations</span></li>
+                    <li><span>Launch</span><span>deployment, testing, and iteration</span></li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="section" id="automation" data-shape="Workflow Circuit">
+            <div class="section-content">
+                <div class="section-kicker">Automation</div>
+                <h2 class="section-title"><span class="thin">Manual work</span>into<br><em>flows</em></h2>
+                <p class="section-body">Arzware connects tools, APIs, data, messages, forms, reminders, and reports so repetitive work becomes reliable, traceable, and easier to manage.</p>
+            </div>
+            <aside class="section-card">
+                <div class="card-index">SECTION / 02</div>
+                <div class="card-title">operation mesh</div>
+                <ul class="card-list">
+                    <li><span>Automate</span><span>lead handling, reports, tasks, and follow-ups</span></li>
+                    <li><span>Connect</span><span>apps, APIs, sheets, calendars, and databases</span></li>
+                    <li><span>Improve</span><span>less repetition, fewer errors, clearer operations</span></li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="section" id="ai" data-shape="Neural Lattice">
+            <div class="section-content">
+                <div class="section-kicker">AI Tools</div>
+                <h2 class="section-title"><span class="thin">Intelligence</span>inside<br><em>work</em></h2>
+                <p class="section-body">We use AI to support real workflows: assistants, content systems, knowledge retrieval, internal tools, and automation layers that help teams move faster with better context.</p>
+            </div>
+            <aside class="section-card">
+                <div class="card-index">SECTION / 03</div>
+                <div class="card-title">AI utility</div>
+                <ul class="card-list">
+                    <li><span>Assistants</span><span>knowledge, support, and productivity helpers</span></li>
+                    <li><span>RAG</span><span>search and answers from business knowledge</span></li>
+                    <li><span>Agents</span><span>AI-supported workflows with human control</span></li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="section" id="contact" data-shape="Launch Grid">
+            <div class="section-content">
+                <div class="section-kicker">Build with Arzware</div>
+                <h2 class="section-title"><span class="thin">From idea</span>to<br><em>launch</em></h2>
+                <p class="section-body">Bring a business problem, workflow, website, app, or AI idea. Arzware can help shape it into a clear plan, then build the version that is useful enough to launch and improve.</p>
+                <div class="section-actions">
+                    <a class="btn-main" href="mailto:hello@arzware.com">Inquire now →</a>
+                    <a class="btn-ghost" href="#hero">Back to top</a>
+                </div>
+            </div>
+            <aside class="section-card">
+                <div class="card-index">SECTION / 04</div>
+                <div class="card-title">next step</div>
+                <ul class="card-list">
+                    <li><span>Start</span><span>describe the goal and current workflow</span></li>
+                    <li><span>Plan</span><span>map features, integrations, and priorities</span></li>
+                    <li><span>Build</span><span>ship the useful version, then iterate</span></li>
+                </ul>
+            </aside>
+        </section>
+    </main>
+
+    <div class="footer-left">Same dust, new structure<br>© 2026 ARZWARE</div>
+    <div class="morph-info">
+        <div class="morph-label">Scroll Form</div>
+        <div class="morph-name" id="morph-name">Digital Core</div>
+        <div class="morph-counter" id="morph-counter">01 / 05</div>
+        <div class="morph-progress-bar"><div class="morph-progress-fill" id="morph-progress"></div></div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        const container = document.getElementById('three-container');
+        const morphNameEl = document.getElementById('morph-name');
+        const morphCounterEl = document.getElementById('morph-counter');
+        const morphProgressEl = document.getElementById('morph-progress');
+        const sections = [...document.querySelectorAll('.section')];
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 2.5;
+        container.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0e0e0e);
+        scene.fog = new THREE.FogExp2(0x0e0e0e, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 5.2);
+
+        const ambient = new THREE.AmbientLight(0xffeedd, 3);
+        scene.add(ambient);
+        const keyLight = new THREE.PointLight(0xc4a882, 15, 50);
+        keyLight.position.set(3, 3, 4);
+        scene.add(keyLight);
+        const fillLight = new THREE.PointLight(0x4a6fa5, 8, 50);
+        fillLight.position.set(-4, -2, 3);
+        scene.add(fillLight);
+        const rimLight = new THREE.PointLight(0x8b7355, 10, 50);
+        rimLight.position.set(0, 4, -3);
+        scene.add(rimLight);
+        const frontLight = new THREE.PointLight(0xffffff, 12, 40);
+        frontLight.position.set(0, 0, 6);
+        scene.add(frontLight);
+
+        const PARTICLE_COUNT = 22000;
+        const shapeNames = ['Digital Core', 'Interface Field', 'Workflow Circuit', 'Neural Lattice', 'Launch Grid'];
+        const shapes = [];
+
+        function jitter(v = 0.035) { return (Math.random() - 0.5) * v; }
+
+        function makeCore() {
+            const pos = new Float32Array(PARTICLE_COUNT * 3);
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const u = Math.random();
+                const v = Math.random();
+                const theta = u * Math.PI * 2;
+                const phi = Math.acos(2 * v - 1);
+                const r = 0.82 + Math.pow(Math.random(), 0.45) * 0.72;
+                const idx = i * 3;
+                pos[idx] = r * Math.sin(phi) * Math.cos(theta) + jitter();
+                pos[idx + 1] = r * Math.cos(phi) + jitter();
+                pos[idx + 2] = r * Math.sin(phi) * Math.sin(theta) + jitter();
+            }
+            return pos;
+        }
+
+        function makeInterfaceField() {
+            const pos = new Float32Array(PARTICLE_COUNT * 3);
+            const cols = 5;
+            const rows = 4;
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const panel = i % (cols * rows);
+                const c = panel % cols;
+                const r = Math.floor(panel / cols);
+                const px = (c - (cols - 1) / 2) * 0.7;
+                const py = ((rows - 1) / 2 - r) * 0.48;
+                const edgeBias = Math.random();
+                let x = (Math.random() - 0.5) * 0.52;
+                let y = (Math.random() - 0.5) * 0.32;
+                if (edgeBias < 0.55) {
+                    const side = Math.floor(Math.random() * 4);
+                    if (side < 2) { x = (side === 0 ? -0.28 : 0.28) + jitter(0.015); }
+                    else { y = (side === 2 ? -0.18 : 0.18) + jitter(0.015); }
+                }
+                const idx = i * 3;
+                pos[idx] = px + x;
+                pos[idx + 1] = py + y;
+                pos[idx + 2] = -0.18 + Math.sin((c + r) * 0.8) * 0.16 + jitter(0.16);
+            }
+            return pos;
+        }
+
+        function makeWorkflowCircuit() {
+            const pos = new Float32Array(PARTICLE_COUNT * 3);
+            const nodes = [
+                [-1.55, 0.55, 0.1], [-0.72, 0.88, -0.1], [0.12, 0.48, 0.08], [0.9, 0.82, -0.05], [1.55, 0.28, 0.12],
+                [-1.4, -0.45, -0.08], [-0.45, -0.16, 0.12], [0.46, -0.62, -0.08], [1.35, -0.42, 0.08]
+            ];
+            const lines = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,2],[6,7],[7,8],[8,4],[2,7]];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const idx = i * 3;
+                if (Math.random() < 0.35) {
+                    const n = nodes[Math.floor(Math.random() * nodes.length)];
+                    const a = Math.random() * Math.PI * 2;
+                    const rr = Math.pow(Math.random(), 0.55) * 0.18;
+                    pos[idx] = n[0] + Math.cos(a) * rr + jitter(0.018);
+                    pos[idx + 1] = n[1] + Math.sin(a) * rr + jitter(0.018);
+                    pos[idx + 2] = n[2] + jitter(0.12);
+                } else {
+                    const [aIdx, bIdx] = lines[Math.floor(Math.random() * lines.length)];
+                    const a = nodes[aIdx], b = nodes[bIdx];
+                    const t = Math.random();
+                    pos[idx] = a[0] + (b[0] - a[0]) * t + jitter(0.05);
+                    pos[idx + 1] = a[1] + (b[1] - a[1]) * t + jitter(0.05);
+                    pos[idx + 2] = a[2] + (b[2] - a[2]) * t + jitter(0.08);
+                }
+            }
+            return pos;
+        }
+
+        function makeNeuralLattice() {
+            const pos = new Float32Array(PARTICLE_COUNT * 3);
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const idx = i * 3;
+                const strand = i % 3;
+                const t = (i / PARTICLE_COUNT) * Math.PI * 12;
+                const y = ((i % Math.floor(PARTICLE_COUNT / 3)) / (PARTICLE_COUNT / 3) - 0.5) * 3.0;
+                const phase = strand * (Math.PI * 2 / 3);
+                const r = 0.45 + 0.18 * Math.sin(t * 0.5);
+                if (Math.random() < 0.78) {
+                    pos[idx] = Math.cos(t + phase) * r + jitter(0.04);
+                    pos[idx + 1] = y + jitter(0.03);
+                    pos[idx + 2] = Math.sin(t + phase) * r + jitter(0.04);
+                } else {
+                    const a = Math.cos(t) * r;
+                    const b = Math.cos(t + Math.PI) * r;
+                    const f = Math.random();
+                    pos[idx] = a * (1 - f) + b * f + jitter(0.035);
+                    pos[idx + 1] = y + jitter(0.035);
+                    pos[idx + 2] = Math.sin(t) * r * (1 - f) + Math.sin(t + Math.PI) * r * f + jitter(0.035);
+                }
+            }
+            return pos;
+        }
+
+        function makeLaunchGrid() {
+            const pos = new Float32Array(PARTICLE_COUNT * 3);
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const idx = i * 3;
+                const layer = i % 5;
+                const grid = 19;
+                const gx = (i % grid) / (grid - 1) - 0.5;
+                const gy = (Math.floor(i / grid) % grid) / (grid - 1) - 0.5;
+                const depth = (layer - 2) * 0.22;
+                const scale = 2.75 - layer * 0.22;
+                pos[idx] = gx * scale + jitter(0.035);
+                pos[idx + 1] = gy * (scale * 0.72) + jitter(0.035);
+                pos[idx + 2] = depth + jitter(0.05);
+                if (Math.random() < 0.12) {
+                    pos[idx] *= 0.3;
+                    pos[idx + 1] += 0.35 + Math.random() * 0.65;
+                    pos[idx + 2] += 0.2;
+                }
+            }
+            return pos;
+        }
+
+        shapes.push(makeCore(), makeInterfaceField(), makeWorkflowCircuit(), makeNeuralLattice(), makeLaunchGrid());
+
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(PARTICLE_COUNT * 3);
+        const targetPositions = new Float32Array(PARTICLE_COUNT * 3);
+        positions.set(shapes[0]);
+        targetPositions.set(shapes[0]);
+
+        const colors = new Float32Array(PARTICLE_COUNT * 3);
+        const sizes = new Float32Array(PARTICLE_COUNT);
+        const randoms = new Float32Array(PARTICLE_COUNT);
+        const c1 = new THREE.Color(0xf0d9b5);
+        const c2 = new THREE.Color(0xd4a574);
+        const c3 = new THREE.Color(0x7eb8e0);
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const ratio = i / PARTICLE_COUNT;
+            const color = ratio < 0.5 ? c1.clone().lerp(c2, ratio * 2) : c2.clone().lerp(c3, (ratio - 0.5) * 2);
+            colors[i * 3] = color.r;
+            colors[i * 3 + 1] = color.g;
+            colors[i * 3 + 2] = color.b;
+            sizes[i] = 0.012 + Math.random() * 0.02;
+            randoms[i] = Math.random();
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+        geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uPixelRatio: { value: renderer.getPixelRatio() },
+                uMorph: { value: 0 },
+                uMouse3D: { value: new THREE.Vector3(0, 0, 0) },
+                uMouseActive: { value: 0 },
+            },
+            vertexShader: `
+                attribute float aSize;
+                attribute float aRandom;
+                varying vec3 vColor;
+                varying float vAlpha;
+                uniform float uTime;
+                uniform float uPixelRatio;
+                uniform float uMorph;
+                uniform vec3 uMouse3D;
+                uniform float uMouseActive;
+                void main() {
+                    vColor = color;
+                    vec3 pos = position;
+                    float breath = sin(uTime * 0.55 + aRandom * 6.28) * 0.018;
+                    pos += normalize(pos + vec3(0.001)) * breath;
+                    float scatter = sin(uMorph * 3.14159) * 0.22;
+                    pos += normalize(pos + vec3(0.001)) * scatter * aRandom;
+                    vec3 toParticle = pos - uMouse3D;
+                    float xyDist = length(toParticle.xy);
+                    float fullDist = length(toParticle);
+                    float influence = 1.0 - smoothstep(0.0, 1.25, xyDist);
+                    influence = influence * influence * uMouseActive;
+                    if (influence > 0.001) {
+                        vec3 pushDir = fullDist > 0.001 ? normalize(toParticle) : vec3(0.0, 1.0, 0.0);
+                        pos += pushDir * influence * 0.22;
+                        pos.z += sin(uTime * 1.2 + aRandom * 6.28) * influence * 0.08;
+                    }
+                    vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+                    gl_PointSize = aSize * uPixelRatio * 500.0 / -mvPos.z;
+                    gl_PointSize = max(gl_PointSize, 1.45);
+                    gl_Position = projectionMatrix * mvPos;
+                    vAlpha = 0.85 + 0.15 * (1.0 - smoothstep(0.0, 10.0, -mvPos.z));
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                varying float vAlpha;
+                void main() {
+                    float d = length(gl_PointCoord - vec2(0.5));
+                    if (d > 0.5) discard;
+                    float alpha = smoothstep(0.5, 0.0, d) * vAlpha;
+                    vec3 brightColor = vColor * 2.2 + 0.15;
+                    gl_FragColor = vec4(brightColor, alpha);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            vertexColors: true,
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        particles.rotation.set(-0.08, 0, 0);
+        scene.add(particles);
+
+        const raycaster = new THREE.Raycaster();
+        const mouseNDC = new THREE.Vector2(9999, 9999);
+        const mousePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const intersectPoint = new THREE.Vector3();
+        let mouseOnScreen = false;
+        let mouseActiveSmooth = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            mouseOnScreen = true;
+        });
+        document.addEventListener('mouseleave', () => {
+            mouseNDC.set(9999, 9999);
+            mouseOnScreen = false;
+        });
+
+        function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+        function smoothstep(t) { return t * t * (3 - 2 * t); }
+        function scrollProgress() {
+            const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+            return clamp01(window.scrollY / max);
+        }
+
+        let desiredProgress = 0;
+        let smoothProgress = 0;
+        let activeIdx = 0;
+        function updateDesiredProgress() { desiredProgress = scrollProgress(); }
+        window.addEventListener('scroll', updateDesiredProgress, { passive: true });
+        updateDesiredProgress();
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => entry.target.classList.toggle('is-visible', entry.isIntersecting));
+        }, { threshold: 0.35 });
+        sections.forEach(section => observer.observe(section));
+
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+            material.uniforms.uTime.value = elapsed;
+
+            smoothProgress += (desiredProgress - smoothProgress) * 0.075;
+            const scaled = smoothProgress * (shapes.length - 1);
+            const from = Math.floor(Math.min(shapes.length - 1, scaled));
+            const to = Math.min(shapes.length - 1, from + 1);
+            const local = smoothstep(scaled - from);
+            material.uniforms.uMorph.value = local;
+
+            const src = shapes[from];
+            const dst = shapes[to];
+            const arr = geometry.attributes.position.array;
+            for (let i = 0, len = PARTICLE_COUNT * 3; i < len; i++) {
+                arr[i] += (src[i] + (dst[i] - src[i]) * local - arr[i]) * 0.16;
+            }
+            geometry.attributes.position.needsUpdate = true;
+
+            const newActive = Math.round(scaled);
+            if (newActive !== activeIdx) {
+                activeIdx = newActive;
+                morphNameEl.textContent = shapeNames[activeIdx];
+                morphCounterEl.textContent = `0${activeIdx + 1} / 0${shapes.length}`;
+            }
+            morphProgressEl.style.width = `${smoothProgress * 100}%`;
+
+            const mouseTarget = mouseOnScreen ? 1 : 0;
+            mouseActiveSmooth += (mouseTarget - mouseActiveSmooth) * 0.08;
+            material.uniforms.uMouseActive.value = mouseActiveSmooth;
+            raycaster.setFromCamera(mouseNDC, camera);
+            raycaster.ray.intersectPlane(mousePlane, intersectPoint);
+            material.uniforms.uMouse3D.value.copy(intersectPoint);
+
+            // Rotation is intentionally shut off: the dust is shaped by scroll, not auto-spin.
+            particles.rotation.y = 0;
+            particles.position.y = Math.sin(elapsed * 0.28) * 0.035;
+            keyLight.position.x = Math.sin(elapsed * 0.2) * 4;
+            keyLight.position.z = Math.cos(elapsed * 0.2) * 4;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
+            updateDesiredProgress();
+        });
+        animate();
+    </script>
+
+    <script>
+        const blurLayer = document.querySelector('.layer-blur');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        let smoothX = mouseX, smoothY = mouseY;
+        let lastBlurX = '', lastBlurY = '';
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateBlur() {
+            smoothX += (mouseX - smoothX) * 0.1;
+            smoothY += (mouseY - smoothY) * 0.1;
+            const newX = (smoothX / window.innerWidth * 100).toFixed(1) + '%';
+            const newY = (smoothY / window.innerHeight * 100).toFixed(1) + '%';
+            if (newX !== lastBlurX || newY !== lastBlurY) {
+                lastBlurX = newX;
+                lastBlurY = newY;
+                blurLayer.style.setProperty('--x', newX);
+                blurLayer.style.setProperty('--y', newY);
+            }
+            requestAnimationFrame(animateBlur);
+        }
+        animateBlur();
+    </script>
+</body>
+</html>
