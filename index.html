@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VANTA — Digital Atelier</title>
+    <title>Arzware — Digital Agency</title>
+    <link rel="icon" type="image/png" href="./arzware-logo.png">
+
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -36,12 +38,17 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; cursor: default; }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background: var(--c-bg);
             font-family: var(--font-sans);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
             color: var(--c-text);
             -webkit-font-smoothing: antialiased;
         }
@@ -51,10 +58,21 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 0;
+            opacity: 1;
+            transition: opacity 0.55s var(--ease);
+            will-change: opacity;
+        }
+
+        #three-container canvas {
+            touch-action: pan-y;
+        }
+
+        .object-label {
+            display: none;
         }
 
         .layer-blur {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             backdrop-filter: blur(6px);
@@ -66,7 +84,7 @@
         }
 
         .noise-overlay {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 3;
@@ -99,7 +117,9 @@
         .ui-layer {
             position: relative;
             z-index: 10;
-            width: 100%; height: 100%;
+            width: 100%;
+            min-height: 100vh;
+            height: 100vh;
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: auto 1fr auto;
@@ -117,6 +137,9 @@
         }
 
         .nav-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
             font-family: var(--font-sans);
             font-size: 1.1rem;
             font-weight: 500;
@@ -127,6 +150,18 @@
             transition: color 0.3s;
         }
         .nav-brand:hover { color: var(--c-accent); }
+
+        .nav-logo {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            display: block;
+            mix-blend-mode: screen;
+            transition: opacity 0.3s ease;
+        }
+        .nav-brand:hover .nav-logo {
+            opacity: 0.85;
+        }
 
         .nav-links {
             display: flex;
@@ -332,24 +367,68 @@
 
         .morph-label {
             font-family: var(--font-mono);
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
+            font-size: 0.58rem;
+            letter-spacing: 0.18em;
             color: var(--c-text-dim);
-            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
             opacity: 0;
             animation: fadeIn 2s var(--ease) forwards 1.5s;
         }
 
+        .morph-label::after {
+            content: ' / SERVICE';
+        }
+
         .morph-name {
             font-family: var(--font-serif);
-            font-size: 2.2rem;
+            font-size: clamp(2.4rem, 4vw, 5.2rem);
+            line-height: 0.95;
             font-style: italic;
-            color: var(--c-accent);
-            transition: all 0.6s var(--ease);
+            font-weight: 400;
+            color: var(--c-highlight);
+            letter-spacing: -0.05em;
+            text-align: right;
+            max-width: 520px;
+            text-shadow: 0 0 35px rgba(196, 168, 130, 0.18);
             opacity: 0;
             animation: fadeIn 2s var(--ease) forwards 1.7s;
-            letter-spacing: -0.02em;
+            transition:
+                opacity 0.45s ease,
+                transform 0.45s ease,
+                filter 0.45s ease,
+                color 0.45s ease;
+        }
+
+        .morph-name.is-changing {
+            opacity: 0;
+            transform: translateY(10px);
+            filter: blur(8px);
+        }
+
+        .morph-quote {
+            max-width: 360px;
+            margin-top: 1rem;
+            margin-left: auto;
+            font-family: var(--font-sans);
+            font-size: clamp(0.78rem, 1vw, 0.95rem);
+            line-height: 1.7;
+            color: rgba(232, 228, 222, 0.52);
+            text-align: right;
+            font-weight: 300;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeIn 2s var(--ease) forwards 1.9s;
+            transition:
+                opacity 0.45s ease,
+                transform 0.45s ease,
+                filter 0.45s ease;
+        }
+
+        .morph-quote.is-changing {
+            opacity: 0;
+            transform: translateY(10px);
+            filter: blur(8px);
         }
 
         .morph-progress-bar {
@@ -419,6 +498,129 @@
             border-color: var(--c-accent);
         }
 
+        /* === NORMAL WEBSITE SECTIONS AFTER HERO === */
+        .page-content {
+            position: relative;
+            z-index: 12;
+            background: linear-gradient(180deg, rgba(14,14,14,0.96), #0e0e0e 18%);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1.15fr);
+            align-items: center;
+            gap: clamp(2rem, 6vw, 7rem);
+            padding: clamp(5rem, 9vw, 8rem) clamp(2rem, 7vw, 7rem);
+            border-top: 1px solid rgba(196, 168, 130, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-section::before {
+            content: '';
+            position: absolute;
+            inset: 10% 8%;
+            border: 1px solid rgba(196, 168, 130, 0.06);
+            border-radius: 2rem;
+            pointer-events: none;
+        }
+
+        .section-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--c-accent);
+            margin-bottom: 1.4rem;
+        }
+
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2.6rem, 5vw, 5.4rem);
+            line-height: 0.98;
+            font-weight: 400;
+            letter-spacing: -0.04em;
+            color: var(--c-highlight);
+            margin-bottom: 1.6rem;
+        }
+
+        .section-title em {
+            color: var(--c-accent);
+            font-style: italic;
+        }
+
+        .section-copy {
+            max-width: 560px;
+            color: var(--c-text-dim);
+            font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+            font-weight: 300;
+            line-height: 1.9;
+            border-left: 2px solid rgba(196, 168, 130, 0.18);
+            padding-left: 1.25rem;
+        }
+
+        .section-panel {
+            position: relative;
+            background: rgba(26, 26, 26, 0.52);
+            border: 1px solid rgba(196, 168, 130, 0.12);
+            border-radius: 1.4rem;
+            padding: clamp(1.4rem, 3vw, 2.5rem);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .mini-card {
+            border: 1px solid rgba(196, 168, 130, 0.12);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            background: rgba(14, 14, 14, 0.42);
+        }
+
+        .mini-card span {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--c-accent2);
+            letter-spacing: 0.16em;
+            margin-bottom: 0.8rem;
+        }
+
+        .mini-card h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--c-highlight);
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-card p {
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: var(--c-text-dim);
+            font-weight: 300;
+        }
+
+        .contact-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(196, 168, 130, 0.1);
+            color: var(--c-text-dim);
+            font-size: 0.9rem;
+        }
+
+        .contact-line strong {
+            color: var(--c-highlight);
+            font-weight: 400;
+        }
 
 
         @keyframes slideUp {
@@ -441,52 +643,395 @@
             }
             .hero-title { font-size: 2.6rem; }
             .hero-title .line-thin { font-size: 2rem; }
-            .morph-info { display: none; }
+            .morph-info {
+                display: flex;
+                position: absolute;
+                right: 2rem;
+                bottom: 4.2rem;
+                padding: 0;
+                align-items: flex-end;
+                max-width: 42vw;
+            }
+            .morph-name {
+                display: none;
+            }
+            .morph-quote {
+                display: block;
+                max-width: 180px;
+                margin-top: 0;
+                margin-left: auto;
+                font-size: 0.68rem;
+                line-height: 1.45;
+                text-align: right;
+                color: rgba(232, 228, 222, 0.58);
+            }
+            .morph-counter {
+                margin-top: 0.7rem;
+                font-size: 0.5rem;
+            }
+            .morph-progress-bar {
+                width: 70px;
+                margin-top: 0.65rem;
+            }
             .nav { padding: 1.5rem 2rem; }
             .footer { padding: 0 2rem 2rem; }
+            .nav-links { display: none; }
+            .content-section {
+                grid-template-columns: 1fr;
+                min-height: auto;
+                padding: 5rem 2rem;
+            }
+            .content-section::before { inset: 1rem; }
+            .panel-grid { grid-template-columns: 1fr; }
+
+            .marquee-section {
+                padding: 0.85rem 0;
+            }
+
+            .marquee-track {
+                animation-duration: 18s;
+            }
+
+            .final-cta {
+                min-height: auto;
+                padding: 6rem 2rem;
+            }
+
+            .final-cta h2 {
+                font-size: clamp(2.4rem, 12vw, 4.4rem);
+            }
+        }
+
+        /* === MARQUEE === */
+        .marquee-section {
+            width: 100%;
+            overflow: hidden;
+            background: #080808;
+            border-top: 1px solid rgba(232, 228, 222, 0.08);
+            border-bottom: 1px solid rgba(232, 228, 222, 0.08);
+            padding: 1.1rem 0;
+            position: relative;
+            z-index: 12;
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marqueeMove 24s linear infinite;
+        }
+
+        .marquee-track span {
+            font-family: var(--font-mono);
+            font-size: clamp(0.65rem, 1vw, 0.9rem);
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(232, 228, 222, 0.78);
+            white-space: nowrap;
+            padding-right: 3rem;
+        }
+
+        @keyframes marqueeMove {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* === FINAL CTA === */
+        .final-cta {
+            min-height: 70vh;
+            padding: 8rem 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: var(--c-bg);
+            position: relative;
+            border-top: 1px solid rgba(196, 168, 130, 0.08);
+        }
+
+        .final-cta-inner {
+            max-width: 980px;
+        }
+
+        .final-cta-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--c-accent);
+            margin-bottom: 2.5rem;
+        }
+
+        .final-cta h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 7vw, 7.5rem);
+            line-height: 1.05;
+            font-weight: 400;
+            letter-spacing: -0.05em;
+            color: var(--c-highlight);
+            margin-bottom: 2.5rem;
+        }
+
+        .final-cta h2 em {
+            color: var(--c-accent);
+            font-style: italic;
+        }
+
+        .final-cta-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* === ABOUT BELIEFS === */
+        .about-beliefs {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .about-belief {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--c-accent);
+            padding-left: 1rem;
+            border-left: 2px solid rgba(196, 168, 130, 0.25);
+            line-height: 1.6;
+        }
+
+        /* === CONFIDENCE / CREAM SECTION === */
+        .confidence-section {
+            background: #f0ebe3;
+            color: #1a1a1a;
+            padding: clamp(5rem, 9vw, 8rem) clamp(2rem, 7vw, 7rem);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confidence-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: clamp(2rem, 6vw, 6rem);
+            align-items: start;
+            margin-bottom: clamp(3rem, 5vw, 5rem);
+        }
+
+        .confidence-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #8b7355;
+            margin-bottom: 1.4rem;
+        }
+
+        .confidence-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2.8rem, 5.5vw, 5.6rem);
+            line-height: 1.0;
+            font-weight: 400;
+            letter-spacing: -0.04em;
+            color: #1a1a1a;
+        }
+
+        .confidence-title em {
+            font-style: italic;
+            color: #8b7355;
+        }
+
+        .confidence-copy {
+            font-family: var(--font-sans);
+            font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+            font-weight: 300;
+            line-height: 1.9;
+            color: #4a4540;
+            max-width: 520px;
+            border-left: 2px solid rgba(139, 115, 85, 0.3);
+            padding-left: 1.25rem;
+            align-self: center;
+        }
+
+        .confidence-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .confidence-card {
+            border: 1px solid rgba(26, 26, 26, 0.12);
+            border-radius: 1rem;
+            padding: clamp(1.5rem, 2.5vw, 2.2rem);
+            background: rgba(255, 255, 255, 0.5);
+            transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+        }
+
+        .confidence-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+        }
+
+        .confidence-card-num {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.18em;
+            color: #8b7355;
+            margin-bottom: 1rem;
+        }
+
+        .confidence-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 0.7rem;
+            letter-spacing: -0.02em;
+        }
+
+        .confidence-card p {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 300;
+            line-height: 1.75;
+            color: #5a554e;
+        }
+
+        @media (max-width: 768px) {
+            .confidence-header {
+                grid-template-columns: 1fr;
+            }
+
+            .confidence-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .confidence-section {
+                padding: 4rem 2rem;
+            }
+
+            .about-beliefs {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-logo {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-brand span {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* === CONTACT BUTTON OVERRIDE === */
+        .contact-btn-wrap .btn-main {
+            background: transparent;
+            color: var(--c-highlight);
+            border: 1px solid var(--c-accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-btn-wrap .btn-main::before {
+            display: none;
+        }
+
+        .contact-btn-wrap .btn-main::after {
+            content: '';
+            position: absolute;
+            left: 1.5rem;
+            right: 1.5rem;
+            bottom: 0.65rem;
+            height: 1px;
+            background: var(--c-accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s var(--ease);
+        }
+
+        .contact-btn-wrap .btn-main:hover::after {
+            transform: scaleX(1);
+        }
+
+        .contact-btn-wrap .btn-main:hover {
+            color: var(--c-accent);
+            background: transparent;
+            box-shadow: none;
+            transform: translateY(-2px);
+        }
+
+        /* === FOOTER LOGO === */
+        .footer-logo {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            mix-blend-mode: screen;
+            opacity: 0.6;
+        }
+
+        /* === CONTACT LOGO === */
+        .contact-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            display: block;
+            margin-bottom: 1.5rem;
+            mix-blend-mode: screen;
+            opacity: 0.7;
+            margin-left: auto;
         }
     </style>
 </head>
 <body>
 
     <div id="three-container"></div>
+    <div class="object-label" id="object-label">Digital Systems</div>
     <div class="layer-blur"></div>
     <div class="noise-overlay"></div>
     <div class="grain-overlay"></div>
 
-    <div class="ui-layer">
+    <div class="ui-layer" id="hero">
         
         <nav class="nav">
-            <a href="#" class="nav-brand">Vanta</a>
+            <a href="#hero" class="nav-brand">
+                <img src="arzware-logo.png" alt="Arzware logo" class="nav-logo">
+                <span>Arzware</span>
+            </a>
             <div class="nav-links">
-                <a href="#" class="nav-link"><span class="nav-idx">01</span>Projects</a>
-                <a href="#" class="nav-link"><span class="nav-idx">02</span>Method</a>
-                <a href="#" class="nav-link"><span class="nav-idx">03</span>About</a>
-                <a href="#" class="nav-link"><span class="nav-idx">04</span>Inquire</a>
+                <a href="#projects" class="nav-link"><span class="nav-idx">01</span>Projects</a>
+                <a href="#services" class="nav-link"><span class="nav-idx">02</span>Services</a>
+                <a href="#about" class="nav-link"><span class="nav-idx">03</span>About</a>
+                <a href="#contact" class="nav-link"><span class="nav-idx">04</span>Inquire</a>
             </div>
         </nav>
 
         <div class="hero">
-            <div class="hero-tag">Generative Design Lab</div>
+            <div class="hero-tag">MADE WITH CARE, BUILT TO LAST</div>
             <h1 class="hero-title"><span class="line-thin">We craft</span>Algorithmic<br><em>Elegance</em></h1>
             <p class="hero-body">Turning raw computation into sensory experiences — each particle a pixel of intention, each form a conversation between chaos and control.</p>
             <div class="hero-actions">
-                <a href="#" class="btn-main">View Collection <span class="btn-arrow">→</span></a>
-                <a href="#" class="btn-ghost">How We Think</a>
+                <a href="#projects" class="btn-main">View Collection <span class="btn-arrow">→</span></a>
+                <a href="#about" class="btn-ghost">How We Think</a>
             </div>
         </div>
 
         <div class="morph-info">
-            <div class="morph-label">Active Form</div>
-            <div class="morph-name" id="morph-name">Dodeca</div>
+            <div class="morph-name" id="morph-name">Digital Systems</div>
+            <p class="morph-quote" id="morph-quote">“Good systems make the work feel lighter.”</p>
             <div class="morph-counter" id="morph-counter">01 / 04</div>
             <div class="morph-progress-bar"><div class="morph-progress-fill" id="morph-progress"></div></div>
         </div>
 
         <div class="footer">
             <div class="footer-left">
-                Somewhere between math & magic<br>
-                © 2026 VANTA LAB
+                <img src="arzware-logo.png" alt="Arzware" class="footer-logo">Somewhere between math & magic<br>
+                © 2026 ARZWARE
             </div>
 
             <div class="footer-right">
@@ -498,6 +1043,99 @@
         </div>
     </div>
 
+    <main class="page-content">
+        <section class="content-section" id="about">
+            <div>
+                <div class="section-kicker">About Arzware</div>
+                <h2 class="section-title">We turn scattered ideas into working <em>digital systems</em>.</h2>
+            </div>
+            <div>
+                <p class="section-copy">Arzware is an AI-native software studio helping businesses build premium websites, workflow automation, internal tools, and digital systems that make operations clearer and easier to scale.</p>
+                <div class="about-beliefs">
+                    <div class="about-belief">Strategy before software</div>
+                    <div class="about-belief">Clean design, clear systems</div>
+                    <div class="about-belief">Built for real business operations</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="marquee-section">
+            <div class="marquee-track">
+                <span>ARZWARE • AI-NATIVE SOFTWARE • AUTOMATION • WEB SYSTEMS • INTERNAL TOOLS • DIGITAL INFRASTRUCTURE • BRAND IDENTITY • HUMAN-CENTERED DESIGN •&nbsp;</span>
+                <span>ARZWARE • AI-NATIVE SOFTWARE • AUTOMATION • WEB SYSTEMS • INTERNAL TOOLS • DIGITAL INFRASTRUCTURE • BRAND IDENTITY • HUMAN-CENTERED DESIGN •&nbsp;</span>
+            </div>
+        </div>
+
+        <section class="confidence-section" id="services">
+            <div class="confidence-header">
+                <div>
+                    <div class="confidence-kicker">§ 01 / What We Build</div>
+                    <h2 class="confidence-title">Websites. Systems.<br><em>Automation.</em></h2>
+                </div>
+                <p class="confidence-copy">Arzware builds digital infrastructure for businesses that need clarity, speed, and better operations — from premium websites to automated workflows and internal tools.</p>
+            </div>
+            <div class="confidence-cards">
+                <div class="confidence-card">
+                    <div class="confidence-card-num">01</div>
+                    <h3>Websites</h3>
+                    <p>Premium landing pages and multi-section websites built for trust, clarity, and conversion.</p>
+                </div>
+                <div class="confidence-card">
+                    <div class="confidence-card-num">02</div>
+                    <h3>Automation</h3>
+                    <p>Workflow systems that reduce manual work, organize leads, and keep teams moving.</p>
+                </div>
+                <div class="confidence-card">
+                    <div class="confidence-card-num">03</div>
+                    <h3>Brand Systems</h3>
+                    <p>Digital identity, messaging, and structure that make a business feel sharper and more trusted.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="projects">
+            <div>
+                <div class="section-kicker">Projects</div>
+                <h2 class="section-title">Selected digital <em>experiments</em>.</h2>
+                <p class="section-copy">Real work, real systems. Each project is a lesson in turning complexity into clarity.</p>
+            </div>
+            <div class="section-panel">
+                <div class="panel-grid">
+                    <div class="mini-card"><span>CASE 01</span><h3>Premium Landing Page</h3><p>A focused page designed to present one offer with clarity and confidence.</p></div>
+                    <div class="mini-card"><span>CASE 02</span><h3>Service Platform</h3><p>A multi-section business website with strong messaging and smooth motion.</p></div>
+                    <div class="mini-card"><span>CASE 03</span><h3>Automation Flow</h3><p>A connected system for inquiries, follow-ups, and internal notifications.</p></div>
+                    <div class="mini-card"><span>CASE 04</span><h3>Brand Refresh</h3><p>A modern visual layer that makes the company feel sharper and more trusted.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="final-cta" id="cta">
+            <div class="final-cta-inner">
+                <div class="final-cta-kicker">◈ Next Step</div>
+                <h2>Build the <em>system</em> before the chaos becomes the process.</h2>
+                <div class="final-cta-actions">
+                    <a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-main">Start a Project <span class="btn-arrow">→</span></a>
+                    <a href="#services" class="btn-ghost">Explore Services</a>
+                    <a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-ghost">Book a Call</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="contact">
+            <div>
+                <div class="section-kicker">Contact</div>
+                <h2 class="section-title">Start the next <em>system</em>.</h2>
+                <p class="section-copy">Tell us what you are building, what feels broken, or what needs to become more premium. We will help shape the next version into something clear, usable, and memorable.</p>
+            </div>
+            <div class="section-panel">
+                <img src="arzware-logo.png" alt="Arzware" class="contact-logo">
+                <div class="contact-line"><strong>Email</strong><span>hello@arzware.com</span></div>
+                <div class="contact-line"><strong>Focus</strong><span>Websites · Automation · Brand Systems</span></div>
+                <div class="contact-line"><strong>Availability</strong><span>New projects open monthly</span></div>
+                <div class="contact-btn-wrap" style="margin-top: 2rem;"><a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-main">Inquire Now <span class="btn-arrow">→</span></a></div>
+            </div>
+        </section>
+    </main>
 
 
     <script type="module">
@@ -505,6 +1143,7 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         const container = document.getElementById('three-container');
+        window.__heroVisualOpacity = 1;
         const morphNameEl = document.getElementById('morph-name');
         const morphCounterEl = document.getElementById('morph-counter');
         const dots = document.querySelectorAll('.dot-nav');
@@ -525,12 +1164,7 @@
         camera.position.set(0, 0, 5);
 
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.04;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.4;
-        controls.enableZoom = false;
-        controls.enablePan = false;
+        controls.enabled = false;
 
         // Lights
         const ambient = new THREE.AmbientLight(0xffeedd, 3);
@@ -789,12 +1423,12 @@
                     if (influence > 0.001) {
                         // Push away from mouse
                         vec3 pushDir = fullDist > 0.001 ? normalize(toParticle) : vec3(0.0, 1.0, 0.0);
-                        float pushStrength = influence * 0.3;
+                        float pushStrength = influence * 0.12;
                         pos += pushDir * pushStrength;
                         
                         // Swirl around mouse (rotate in XY plane around mouse position)
                         float swirlSpeed = uTime * 2.0 + aRandom * 6.28;
-                        float swirlStrength = influence * 0.25;
+                        float swirlStrength = influence * 0.10;
                         vec2 radial = pos.xy - uMouse3D.xy;
                         float angle = swirlStrength * (1.0 + sin(swirlSpeed) * 0.3);
                         float cosA = cos(angle);
@@ -806,7 +1440,7 @@
                         pos.xy = uMouse3D.xy + rotated;
                         
                         // Z-axis gentle orbit for depth feel
-                        pos.z += sin(swirlSpeed * 0.7 + aRandom * 3.14) * influence * 0.15;
+                        pos.z += sin(swirlSpeed * 0.7 + aRandom * 3.14) * influence * 0.06;
                         
                         // Organic jitter
                         float jitter = sin(uTime * 4.0 + aRandom * 18.0) * 0.02 * influence;
@@ -851,12 +1485,26 @@
         let morphStartTime = 0;
         const clock = new THREE.Clock();
 
+        // Service content mapped to each shape
+        const objectCopy = [
+            { title: 'Digital Systems', quote: '\u201cGood systems make the work feel lighter.\u201d' },
+            { title: 'Human Design', quote: '\u201cTechnology should feel made for people.\u201d' },
+            { title: 'Brand Identity', quote: '\u201cTrust is built in the details.\u201d' },
+            { title: 'Automation', quote: '\u201cThe best process is the one that quietly works.\u201d' }
+        ];
+        const morphQuoteEl = document.getElementById('morph-quote');
+        let labelUpdatedForMorph = false;
+
         function startMorph(targetIdx) {
             if (isMorphing || targetIdx === currentShape) return;
             targetShape = targetIdx;
             isMorphing = true;
             morphStartTime = clock.getElapsedTime();
+            labelUpdatedForMorph = false;
 
+            // Fade out the morph-name and quote at morph start
+            if (morphNameEl) morphNameEl.classList.add('is-changing');
+            if (morphQuoteEl) morphQuoteEl.classList.add('is-changing');
         }
 
         // Morph progress bar
@@ -884,7 +1532,8 @@
         });
 
         function updateUI(idx) {
-            morphNameEl.textContent = shapeNames[idx];
+            morphNameEl.textContent = objectCopy[idx].title;
+            if (morphQuoteEl) morphQuoteEl.textContent = objectCopy[idx].quote;
             morphCounterEl.textContent = `0${idx + 1} / 0${shapes.length}`;
             dots.forEach((d, i) => d.classList.toggle('active', i === idx));
         }
@@ -893,16 +1542,58 @@
         const raycaster = new THREE.Raycaster();
         const mouseNDC = new THREE.Vector2(9999, 9999);
         const mousePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-        const mouse3D = new THREE.Vector3();
         let mouseOnScreen = false;
         let mouseActiveSmooth = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        // === POINTER / TOUCH INTERACTION ===
+        const interactionLayer = renderer.domElement;
+
+        function updatePointerPosition(clientX, clientY) {
+            mouseNDC.x = (clientX / window.innerWidth) * 2 - 1;
+            mouseNDC.y = -(clientY / window.innerHeight) * 2 + 1;
+            mouseOnScreen = true;
+        }
+
+        // Desktop: pointer events
+        interactionLayer.addEventListener('pointermove', (e) => {
+            updatePointerPosition(e.clientX, e.clientY);
+        });
+
+        interactionLayer.addEventListener('pointerdown', (e) => {
+            updatePointerPosition(e.clientX, e.clientY);
             mouseOnScreen = true;
         });
 
+        interactionLayer.addEventListener('pointerup', () => {
+            mouseOnScreen = false;
+        });
+
+        interactionLayer.addEventListener('pointercancel', () => {
+            mouseOnScreen = false;
+        });
+
+        interactionLayer.addEventListener('pointerleave', () => {
+            mouseNDC.set(9999, 9999);
+            mouseOnScreen = false;
+        });
+
+        // Mobile: explicit touch events for reliable coverage
+        interactionLayer.addEventListener('touchmove', (e) => {
+            if (window.scrollY < window.innerHeight * 0.75) {
+                const touch = e.touches[0];
+                updatePointerPosition(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+
+        interactionLayer.addEventListener('touchend', () => {
+            mouseOnScreen = false;
+        });
+
+        interactionLayer.addEventListener('touchcancel', () => {
+            mouseOnScreen = false;
+        });
+
+        // Desktop fallback: document-level mouse leave
         document.addEventListener('mouseleave', () => {
             mouseNDC.set(9999, 9999);
             mouseOnScreen = false;
@@ -929,7 +1620,8 @@
             // Smooth mouse activation
             const mouseTarget = mouseOnScreen ? 1 : 0;
             mouseActiveSmooth += (mouseTarget - mouseActiveSmooth) * 0.08;
-            material.uniforms.uMouseActive.value = mouseActiveSmooth;
+            const heroVisualOpacity = window.__heroVisualOpacity ?? 1;
+            material.uniforms.uMouseActive.value = mouseActiveSmooth * heroVisualOpacity;
 
             // Update mouse 3D position via raycasting onto a plane at z=0
             raycaster.setFromCamera(mouseNDC, camera);
@@ -963,16 +1655,28 @@
                     lastUIUpdate = -1;
                 }
 
-                // Update UI at midpoint (only once)
+                // Update UI and morph-name at midpoint (only once)
                 if (rawProgress > 0.4 && rawProgress < 0.6 && lastUIUpdate !== targetShape) {
                     lastUIUpdate = targetShape;
                     updateUI(targetShape);
+
+                    // Swap morph-name and quote text mid-morph, then fade back in
+                    if (!labelUpdatedForMorph && morphNameEl) {
+                        labelUpdatedForMorph = true;
+                        morphNameEl.textContent = objectCopy[targetShape].title;
+                        if (morphQuoteEl) morphQuoteEl.textContent = objectCopy[targetShape].quote;
+                        requestAnimationFrame(() => {
+                            morphNameEl.classList.remove('is-changing');
+                            if (morphQuoteEl) morphQuoteEl.classList.remove('is-changing');
+                        });
+                    }
                 }
             }
 
-            // Gentle float
-            particles.rotation.y = elapsed * 0.05;
-            particles.position.y = Math.sin(elapsed * 0.3) * 0.05;
+            particles.rotation.set(0, 0, 0);
+            particles.position.set(0, 0, 0);
+            const isMobile = window.innerWidth <= 768;
+            particles.scale.setScalar(isMobile ? 0.82 : 1);
 
             // Light animation
             const sinT = Math.sin(elapsed * 0.2);
@@ -1002,6 +1706,35 @@
     </script>
 
     <script>
+
+        const heroVisuals = [
+            document.getElementById('three-container')
+        ];
+
+        function updateHeroVisualFade() {
+            const heroHeight = window.innerHeight || 1;
+            const fadeStart = heroHeight * 0.18;
+            const fadeEnd = heroHeight * 0.72;
+            const raw = (window.scrollY - fadeStart) / (fadeEnd - fadeStart);
+            const progress = Math.min(Math.max(raw, 0), 1);
+            const opacity = 1 - progress;
+            window.__heroVisualOpacity = opacity;
+
+            const threeContainer = document.getElementById('three-container');
+            heroVisuals.forEach((el) => {
+                if (!el) return;
+                el.style.opacity = opacity.toFixed(3);
+            });
+
+            if (threeContainer) {
+                threeContainer.style.pointerEvents = opacity > 0.05 ? 'auto' : 'none';
+            }
+        }
+
+        window.addEventListener('scroll', updateHeroVisualFade, { passive: true });
+        window.addEventListener('resize', updateHeroVisualFade);
+        updateHeroVisualFade();
+
         const blurLayer = document.querySelector('.layer-blur');
         let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
         let smoothX = mouseX, smoothY = mouseY;
