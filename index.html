@@ -1414,7 +1414,7 @@
 
         <section class="system-stack-section" id="build-map">
             <div class="system-stack-intro">
-                <div class="system-stack-eyebrow">§ 03 / What We Build</div>
+                <div class="system-stack-eyebrow">§ 02 / What We Build</div>
                 <h2 class="system-stack-title">The business layer, assembled <em>piece by piece</em>.</h2>
                 <p class="system-stack-copy">Every company already has a system. Sometimes it lives in messages, memory, spreadsheets, and repeated manual work. We turn those scattered pieces into a digital layer the business can actually lean on.</p>
                 <div class="system-stack-note">not a menu of services — a working stack</div>
@@ -1715,7 +1715,15 @@
 
         // Keep every morph visually the same footprint as the hero object.
         const heroShapeAxis = getShapeBounds(shapes[0]).maxAxis;
-        shapes.forEach((shape) => normalizeShapeToAxis(shape, heroShapeAxis));
+        shapes.forEach((shape, index) => {
+            normalizeShapeToAxis(shape, heroShapeAxis);
+            // Increase Helix size (index 3)
+            if (index === 3) {
+                for (let i = 0; i < shape.length; i++) {
+                    shape[i] *= 1.6;
+                }
+            }
+        });
 
         // === PARTICLE SYSTEM ===
         const geometry = new THREE.BufferGeometry();
