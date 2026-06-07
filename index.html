@@ -1640,9 +1640,9 @@
                 for (let i = 0; i < helixCount; i++) {
                     const idx = (h * helixCount + i) * 3;
                     const t = (i / helixCount) * Math.PI * 6 - Math.PI * 3;
-                    const r = 0.6;
+                    const r = 0.72;
                     pos[idx]     = r * Math.cos(t + offset) + (Math.random() - 0.5) * 0.04;
-                    pos[idx + 1] = t * 0.25 + (Math.random() - 0.5) * 0.04;
+                    pos[idx + 1] = t * 0.28 + (Math.random() - 0.5) * 0.04;
                     pos[idx + 2] = r * Math.sin(t + offset) + (Math.random() - 0.5) * 0.04;
 
                     // Add connecting rungs every so often
@@ -1651,6 +1651,7 @@
                         const rungAngle = (rungT / helixCount) * Math.PI * 6 - Math.PI * 3;
                         const frac = (i % 200) / 10;
                         pos[idx]     = r * Math.cos(rungAngle) * (1 - frac) + r * Math.cos(rungAngle + Math.PI) * frac;
+                        pos[idx + 1] = t * 0.28 + (Math.random() - 0.5) * 0.04;
                         pos[idx + 2] = r * Math.sin(rungAngle) * (1 - frac) + r * Math.sin(rungAngle + Math.PI) * frac;
                     }
                 }
