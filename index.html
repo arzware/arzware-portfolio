@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arzware — Digital Systems Atelier</title>
+<title>Arzware — Digital Systems with Soul</title>
     <meta name="description" content="Arzware builds digital spines for modern businesses: websites, custom software, dashboards, automation, CRM-lite systems, and practical AI workflows.">
     <link rel="canonical" href="https://arzware.net/">
 
@@ -171,13 +171,17 @@
             text-decoration: none;
             letter-spacing: 0.18em;
             text-transform: uppercase;
-            transition: color 0.3s;
+            transition: color 0.3s, text-shadow 0.3s;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.8);
         }
-        .nav-brand:hover { color: var(--c-accent); }
+        .nav-brand:hover { 
+            color: var(--c-accent);
+            text-shadow: 0 0 15px rgba(0, 0, 0, 1), 0 0 30px rgba(0, 0, 0, 1);
+        }
 
         .nav-logo {
-            width: 34px;
-            height: 34px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
             display: block;
             mix-blend-mode: screen;
@@ -461,11 +465,12 @@
             font-family: var(--font-sans);
             font-size: clamp(0.92rem, 1.08vw, 1.08rem);
             line-height: 1.7;
-            color: rgba(232, 228, 222, 0.52);
+            color: rgba(232, 228, 222, 0.9);
             text-align: right;
             font-weight: 300;
             font-style: italic;
             opacity: 0;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.6);
             animation: fadeIn 2s var(--ease) forwards 1.9s;
             transition:
                 opacity 0.45s ease,
@@ -499,11 +504,12 @@
 
         .morph-counter {
             font-family: var(--font-mono);
-            font-size: 0.55rem;
+            font-size: 0.6rem;
             color: var(--c-accent2);
             margin-top: 0.8rem;
             letter-spacing: 0.1em;
             opacity: 0;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
             animation: fadeIn 2s var(--ease) forwards 1.9s;
         }
 
@@ -617,6 +623,37 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+        }
+
+        .section-panel.light-panel {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+            color: #1a1a1a;
+        }
+
+        .section-panel.light-panel .contact-logo {
+            mix-blend-mode: normal;
+            opacity: 0.9;
+        }
+
+        .section-panel.light-panel .contact-line {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            color: #5a554e;
+        }
+
+        .section-panel.light-panel .contact-line strong {
+            color: #1a1a1a;
+        }
+
+        .section-panel.light-panel .btn-main {
+            color: #1a1a1a;
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .section-panel.light-panel .btn-main:hover {
+            background: #1a1a1a;
+            color: #f0ebe3;
         }
 
         .panel-grid {
@@ -1186,8 +1223,8 @@
             }
 
             .nav-logo {
-                width: 30px;
-                height: 30px;
+                width: 36px;
+                height: 36px;
             }
 
             .nav-brand span {
@@ -1459,18 +1496,29 @@
             </div>
         </section>
 
-        <section class="content-section" id="contact">
-            <div>
-                <div class="section-kicker">Transmission</div>
-                <h2 class="section-title">Bring the messy part. We will name the <em>system</em>.</h2>
-                <p class="section-copy">Tell us where the work is leaking: the repeated task, the scattered tool, the client flow, the dashboard nobody has, the AI idea that needs guardrails. We will turn it into something the business can lean on.</p>
+                <div class="marquee-section">
+            <div class="marquee-track">
+                <span>ARZWARE • DIGITAL SPINE • QUIET AUTOMATION • WEB SYSTEMS • INTERNAL TOOLS • DASHBOARDS • AI WITH HUMAN JUDGMENT • OPERATING LAYERS •&nbsp;</span>
+                <span>ARZWARE • DIGITAL SPINE • QUIET AUTOMATION • WEB SYSTEMS • INTERNAL TOOLS • DASHBOARDS • AI WITH HUMAN JUDGMENT • OPERATING LAYERS •&nbsp;</span>
             </div>
-            <div class="section-panel">
+        </div>
+
+        <section class="system-stack-section" id="contact">
+            <div class="system-stack-intro">
+                <div class="system-stack-eyebrow">§ 03 / Transmission</div>
+                <h2 class="system-stack-title">Bring the messy part. We will name the <em>system</em>.</h2>
+                <p class="system-stack-copy">Tell us where the work is leaking: the repeated task, the scattered tool, the client flow, the dashboard nobody has, the AI idea that needs guardrails. We will turn it into something the business can lean on.</p>
+            </div>
+            <div class="section-panel light-panel">
                 <img src="arzware-logo.png" alt="Arzware" class="contact-logo">
                 <div class="contact-line"><strong>Email</strong><span>hello@arzware.net</span></div>
                 <div class="contact-line"><strong>Focus</strong><span>Web systems · Automation · AI workflows</span></div>
                 <div class="contact-line"><strong>Availability</strong><span>Selective builds open monthly</span></div>
                 <div class="contact-btn-wrap" style="margin-top: 2rem;"><a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-main">Send the Signal <span class="btn-arrow">→</span></a></div>
+            </div>
+                        <div class="footer-left">
+                <img src="arzware-logo.png" alt="Arzware" class="footer-logo">
+                © 2026 ARZWARE
             </div>
         </section>
     </main>
