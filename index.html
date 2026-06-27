@@ -263,7 +263,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding-left: 3.5rem;
+            /* Fixed the padding problem in the hero section - MoGhoz */
+            /* padding-left: 3.5rem; */ 
+            padding: clamp(5rem, 9vw, 8rem) clamp(2rem, 7vw, 7rem);
             max-width: 640px;
             position: relative;
             z-index: 5;
@@ -1390,7 +1392,7 @@
         </div>
 
         <div class="morph-info">
-            <div class="morph-name" id="morph-name">Operating Layer</div>
+            <!-- <div class="morph-name" id="morph-name">Operating Layer</div> -->
             <p class="morph-quote" id="morph-quote">“The work should remember itself.”</p>
             <div class="morph-counter" id="morph-counter">01 / 04</div>
             <div class="morph-progress-bar"><div class="morph-progress-fill" id="morph-progress"></div></div>
@@ -1941,10 +1943,15 @@
 
         // Service content mapped to each shape
         const objectCopy = [
-            { title: 'Operating Layer', quote: '\u201cThe work should remember itself.\u201d' },
-            { title: 'Human Judgment', quote: '\u201cAI can assist. People still decide.\u201d' },
-            { title: 'Business Memory', quote: '\u201cA dashboard is a company learning to see.\u201d' },
-            { title: 'Quiet Automation', quote: '\u201cThe best process stops asking to be remembered.\u201d' }
+            // MoGhoz - left only the quotes, removed titles..
+            // { title: 'Operating Layer', quote: '\u201cThe work should remember itself.\u201d' },
+            // { title: 'Human Judgment', quote: '\u201cAI can assist. People still decide.\u201d' },
+            // { title: 'Business Memory', quote: '\u201cA dashboard is a company learning to see.\u201d' },
+            // { title: 'Quiet Automation', quote: '\u201cThe best process stops asking to be remembered.\u201d' },
+            { title: '', quote: '\u201cThe work should remember itself.\u201d' },
+            { title: '', quote: '\u201cAI can assist. People still decide.\u201d' },
+            { title: '', quote: '\u201cA dashboard is a company learning to see.\u201d' },
+            { title: '', quote: '\u201cThe best process stops asking to be remembered.\u201d' }
         ];
         const morphQuoteEl = document.getElementById('morph-quote');
         let labelUpdatedForMorph = false;
