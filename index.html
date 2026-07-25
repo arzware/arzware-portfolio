@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arzware — Business Development Through Digital Innovation</title>
-    <meta name="description" content="Arzware helps businesses diagnose growth and operational problems, then implement practical solutions through digital systems, websites, AI, automation, internal tools and trusted collaboration.">
+    <meta name="description"
+        content="Arzware helps businesses diagnose growth and operational problems, then implement practical solutions through digital systems, websites, AI, automation, internal tools and trusted collaboration.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="Arzware">
     <link rel="canonical" href="https://arzware.net/">
@@ -13,7 +15,8 @@
     <meta property="og:url" content="https://arzware.net/">
     <meta property="og:site_name" content="Arzware">
     <meta property="og:title" content="Arzware — Business Development Through Digital Innovation">
-    <meta property="og:description" content="Diagnose what is blocking growth, then implement the right practical solution through digital systems, AI, automation and trusted collaboration.">
+    <meta property="og:description"
+        content="Diagnose what is blocking growth, then implement the right practical solution through digital systems, AI, automation and trusted collaboration.">
     <meta property="og:image" content="https://arzware.net/og-image-whatsapp.jpg">
     <meta property="og:image:url" content="https://arzware.net/og-image-whatsapp.jpg">
     <meta property="og:image:secure_url" content="https://arzware.net/og-image-whatsapp.jpg">
@@ -25,7 +28,8 @@
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Arzware — Business Development Through Digital Innovation">
-    <meta name="twitter:description" content="Diagnose what is blocking growth, then implement the right practical solution through digital systems, AI, automation and trusted collaboration.">
+    <meta name="twitter:description"
+        content="Diagnose what is blocking growth, then implement the right practical solution through digital systems, AI, automation and trusted collaboration.">
     <meta name="twitter:image" content="https://arzware.net/og-image-whatsapp.jpg">
 
     <script type="application/ld+json">
@@ -56,10 +60,12 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026-06-07-logo">
     <link rel="shortcut icon" href="/favicon.ico?v=2026-06-07-logo">
 
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap"
+        rel="stylesheet">
     <script type="importmap">
         {
             "imports": {
@@ -78,15 +84,20 @@
             --c-accent: #c4a882;
             --c-accent2: #8b7355;
             --c-highlight: #f0ebe3;
-            
+
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Space Grotesk', sans-serif;
             --font-mono: 'IBM Plex Mono', monospace;
-            
+
             --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: default; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: default;
+        }
 
         html {
             scroll-behavior: smooth;
@@ -105,13 +116,24 @@
 
         #three-container {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
             opacity: 1;
             transition: opacity 0.55s var(--ease);
             will-change: opacity;
             pointer-events: none;
+        }
+
+        #three-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, rgba(0, 0, 0, 0.35) 70%, rgba(0, 0, 0, 0.7) 100%);
         }
 
         #three-container canvas {
@@ -125,20 +147,25 @@
 
         .layer-blur {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             z-index: 2;
             pointer-events: none;
             mask-image: radial-gradient(circle 250px at var(--x, 50%) var(--y, 50%), transparent 0%, transparent 30%, black 100%);
             -webkit-mask-image: radial-gradient(circle 250px at var(--x, 50%) var(--y, 50%), transparent 0%, transparent 30%, black 100%);
+            contain: strict;
         }
 
         .noise-overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 3;
             opacity: 0.02;
             pointer-events: none;
@@ -147,22 +174,39 @@
 
         .grain-overlay {
             position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
             z-index: 4;
             pointer-events: none;
             opacity: 0.006;
             background: repeating-conic-gradient(var(--c-text) 0.00015%, transparent 0.0004%, transparent 0.00075%, var(--c-text) 0.001%);
             animation: grainShift 0.5s steps(1) infinite;
             will-change: transform;
+            contain: strict;
         }
 
         @keyframes grainShift {
-            0% { transform: translate3d(0, 0, 0); }
-            25% { transform: translate3d(-2%, 3%, 0); }
-            50% { transform: translate3d(1%, -2%, 0); }
-            75% { transform: translate3d(-3%, 1%, 0); }
-            100% { transform: translate3d(2%, -1%, 0); }
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            25% {
+                transform: translate3d(-2%, 3%, 0);
+            }
+
+            50% {
+                transform: translate3d(1%, -2%, 0);
+            }
+
+            75% {
+                transform: translate3d(-3%, 1%, 0);
+            }
+
+            100% {
+                transform: translate3d(2%, -1%, 0);
+            }
         }
 
         /* === LAYOUT === */
@@ -202,7 +246,8 @@
             transition: color 0.3s, text-shadow 0.3s;
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.8);
         }
-        .nav-brand:hover { 
+
+        .nav-brand:hover {
             color: var(--c-accent);
             text-shadow: 0 0 15px rgba(0, 0, 0, 1), 0 0 30px rgba(0, 0, 0, 1);
         }
@@ -215,6 +260,7 @@
             mix-blend-mode: screen;
             transition: opacity 0.3s ease;
         }
+
         .nav-brand:hover .nav-logo {
             opacity: 0.85;
         }
@@ -235,7 +281,12 @@
             font-weight: 300;
             position: relative;
         }
-        .nav-link:hover { color: var(--c-highlight); letter-spacing: 0.1em; }
+
+        .nav-link:hover {
+            color: var(--c-highlight);
+            letter-spacing: 0.1em;
+        }
+
         .nav-link::after {
             content: '';
             position: absolute;
@@ -246,7 +297,10 @@
             background: var(--c-accent);
             transition: width 0.4s var(--ease);
         }
-        .nav-link:hover::after { width: 100%; }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
 
         .nav-idx {
             font-family: var(--font-mono);
@@ -264,7 +318,7 @@
             flex-direction: column;
             justify-content: center;
             /* Fixed the padding problem in the hero section - MoGhoz */
-            /* padding-left: 3.5rem; */ 
+            /* padding-left: 3.5rem; */
             padding: clamp(5rem, 9vw, 8rem) clamp(2rem, 7vw, 7rem);
             max-width: 640px;
             position: relative;
@@ -393,16 +447,23 @@
             position: relative;
             overflow: hidden;
         }
+
         .btn-main::before {
             content: '';
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
             background: var(--c-accent);
             transition: left 0.5s var(--ease);
             z-index: -1;
         }
-        .btn-main:hover::before { left: 0; }
+
+        .btn-main:hover::before {
+            left: 0;
+        }
+
         .btn-main:hover {
             color: var(--c-bg);
             transform: translateY(-2px);
@@ -413,18 +474,35 @@
             font-family: var(--font-sans);
             font-size: 0.72rem;
             letter-spacing: 0.06em;
-            padding: 0.9rem 2rem;
-            background: rgba(8, 7, 6, 0.28);
+            padding: 0.9rem 0;
+            background: transparent !important;
             color: rgba(247, 241, 232, 0.72);
-            border: 1.5px solid rgba(216, 184, 135, 0.3);
+            border: none;
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.72);
             text-decoration: none;
             font-weight: 300;
             transition: all 0.5s var(--ease);
-            border-radius: 3rem;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
         }
+
+        .btn-ghost::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--c-accent);
+            transition: width 0.4s var(--ease);
+        }
+
+        .btn-ghost:hover::after {
+            width: 100%;
+        }
+
         .btn-ghost:hover {
-            border-color: var(--c-accent);
             color: var(--c-accent);
             transform: translateY(-2px);
         }
@@ -434,7 +512,10 @@
             margin-left: 0.5rem;
             transition: transform 0.3s var(--ease);
         }
-        .btn-main:hover .btn-arrow { transform: translateX(4px); }
+
+        .btn-main:hover .btn-arrow {
+            transform: translateX(4px);
+        }
 
         /* RIGHT SIDE — morph info */
         .morph-info {
@@ -524,6 +605,7 @@
             opacity: 0;
             animation: fadeIn 2s var(--ease) forwards 2s;
         }
+
         .morph-progress-fill {
             height: 100%;
             width: 0%;
@@ -570,13 +652,15 @@
         }
 
         .dot-nav {
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             border: 1px solid var(--c-accent2);
             background: transparent;
             transition: all 0.3s;
             pointer-events: auto;
         }
+
         .dot-nav.active {
             background: var(--c-accent);
             border-color: var(--c-accent);
@@ -586,7 +670,7 @@
         .page-content {
             position: relative;
             z-index: 12;
-            background: linear-gradient(180deg, rgba(14,14,14,0.96), #0e0e0e 18%);
+            background: linear-gradient(180deg, rgba(14, 14, 14, 0.96), #0e0e0e 18%);
         }
 
         .content-section {
@@ -898,23 +982,37 @@
 
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
             .ui-layer {
                 grid-template-columns: 1fr;
             }
+
             .hero {
                 padding: 0 2rem;
                 grid-column: 1;
             }
+
             .hero::before {
                 inset: -2.5rem -1rem -2.5rem -1.25rem;
                 width: 92vw;
@@ -924,20 +1022,30 @@
                 filter: blur(8px);
                 opacity: 0.96;
             }
+
             #three-container {
                 opacity: 0.74;
-                filter: brightness(0.72) contrast(0.96) saturate(0.95);
             }
+
+            #three-container::after {
+                background: radial-gradient(ellipse 80% 70% at 50% 45%, transparent 18%, rgba(0, 0, 0, 0.45) 55%, rgba(0, 0, 0, 0.82) 100%);
+            }
+
             .hero-title {
                 font-size: 2.6rem;
                 -webkit-text-stroke: 0.28px rgba(0, 0, 0, 0.48);
             }
-            .hero-title .line-thin { font-size: 2rem; }
+
+            .hero-title .line-thin {
+                font-size: 2rem;
+            }
+
             .hero-body {
                 color: rgba(247, 241, 232, 0.94);
                 border-left-color: rgba(216, 184, 135, 0.46);
                 text-shadow: 0 2px 20px rgba(0, 0, 0, 0.95);
             }
+
             .hero-actions {
                 position: relative;
                 z-index: 8;
@@ -945,6 +1053,7 @@
                 width: 100%;
                 max-width: 326px;
             }
+
             .btn-main,
             .btn-ghost {
                 flex: 1 1 0;
@@ -958,14 +1067,17 @@
                 line-height: 1;
                 white-space: nowrap;
             }
+
             .btn-ghost {
                 color: rgba(247, 241, 232, 0.76);
                 border-color: rgba(216, 184, 135, 0.34);
                 background: rgba(8, 7, 6, 0.34);
             }
+
             .btn-arrow {
                 margin-left: 0.36rem;
             }
+
             .morph-info {
                 display: flex;
                 position: absolute;
@@ -977,9 +1089,11 @@
                 pointer-events: none;
                 z-index: 2;
             }
+
             .morph-name {
                 display: none;
             }
+
             .morph-quote {
                 display: block;
                 max-width: none;
@@ -991,34 +1105,52 @@
                 color: rgba(232, 228, 222, 0.44);
                 white-space: nowrap;
             }
+
             .morph-counter {
                 margin-top: 0.7rem;
                 font-size: 0.5rem;
             }
+
             .morph-progress-bar {
                 width: 70px;
                 margin-top: 0.65rem;
             }
-            .nav { padding: 1.5rem 2rem; }
+
+            .nav {
+                padding: 1.5rem 2rem;
+            }
+
             .footer {
                 padding: 0 2rem calc(3.8rem + env(safe-area-inset-bottom));
             }
+
             .footer-left {
                 font-size: 0.5rem;
                 line-height: 1.55;
                 color: rgba(232, 228, 222, 0.48);
             }
+
             .footer-right {
                 display: none;
             }
-            .nav-links { display: none; }
+
+            .nav-links {
+                display: none;
+            }
+
             .content-section {
                 grid-template-columns: 1fr;
                 min-height: auto;
                 padding: 5rem 2rem;
             }
-            .content-section::before { inset: 1rem; }
-            .panel-grid { grid-template-columns: 1fr; }
+
+            .content-section::before {
+                inset: 1rem;
+            }
+
+            .panel-grid {
+                grid-template-columns: 1fr;
+            }
 
             .marquee-section {
                 padding: 0.85rem 0;
@@ -1067,8 +1199,13 @@
         }
 
         @keyframes marqueeMove {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
         }
 
         /* === FINAL CTA === */
@@ -1359,6 +1496,7 @@
     </style>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <div id="three-container" aria-hidden="true"></div>
@@ -1373,7 +1511,15 @@
                 <img src="arzware-logo.png?v=2026-06-07-logo" alt="" class="nav-logo" width="50" height="50">
                 <span>Arzware</span>
             </a>
-            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"
+                aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="4" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    <line x1="4" y1="16" x2="20" y2="16" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                </svg>
+            </button>
             <div class="nav-links" id="site-menu">
                 <a href="#hero" class="nav-link"><span class="nav-idx">01</span>Home</a>
                 <a href="#solutions" class="nav-link"><span class="nav-idx">02</span>Solutions</a>
@@ -1387,9 +1533,11 @@
 
         <div class="hero">
             <h1 class="hero-title">Business development through <em>digital innovation.</em></h1>
-            <p class="hero-body">Arzware diagnoses what is blocking business growth, then builds or connects the right digital system, AI workflow or operational solution.</p>
+            <p class="hero-body">Arzware diagnoses what is blocking business growth, then builds or connects the right
+                digital system, AI workflow or operational solution.</p>
             <div class="hero-actions">
-                <a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-main">Start a Business Improvement Review <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+                <a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-main">Start a
+                    Business Improvement Review <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
                 <a href="#how-we-work" class="hero-text-link">See how we work <span aria-hidden="true">↓</span></a>
             </div>
         </div>
@@ -1398,13 +1546,17 @@
             <span id="morph-name" hidden></span>
             <p class="morph-quote" id="morph-quote">“The work should remember itself.”</p>
             <div class="morph-counter" id="morph-counter">01 / 04</div>
-            <div class="morph-progress-bar"><div class="morph-progress-fill" id="morph-progress"></div></div>
+            <div class="morph-progress-bar">
+                <div class="morph-progress-fill" id="morph-progress"></div>
+            </div>
         </div>
 
         <div class="footer" aria-hidden="true">
-            <div class="footer-left"><img src="arzware-logo.png?v=2026-06-07-logo" alt="" class="footer-logo">© 2026 ARZWARE</div>
+            <div class="footer-left"><img src="arzware-logo.png?v=2026-06-07-logo" alt="" class="footer-logo">© 2026
+                ARZWARE</div>
             <div class="footer-right">
-                <button type="button" class="dot-nav active" data-idx="0" tabindex="-1" aria-label="Visual state 1"></button>
+                <button type="button" class="dot-nav active" data-idx="0" tabindex="-1"
+                    aria-label="Visual state 1"></button>
                 <button type="button" class="dot-nav" data-idx="1" tabindex="-1" aria-label="Visual state 2"></button>
                 <button type="button" class="dot-nav" data-idx="2" tabindex="-1" aria-label="Visual state 3"></button>
                 <button type="button" class="dot-nav" data-idx="3" tabindex="-1" aria-label="Visual state 4"></button>
@@ -1414,8 +1566,14 @@
 
     <div class="signal-strip" aria-label="Arzware capabilities">
         <div class="signal-track">
-            <span>ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL SPINE&nbsp;&nbsp;•&nbsp;&nbsp;QUIET AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;WEB SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;INTERNAL TOOLS&nbsp;&nbsp;•&nbsp;&nbsp;DASHBOARDS&nbsp;&nbsp;•&nbsp;&nbsp;AI WITH HUMAN JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;OPERATING LAYERS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-            <span aria-hidden="true">ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL SPINE&nbsp;&nbsp;•&nbsp;&nbsp;QUIET AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;WEB SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;INTERNAL TOOLS&nbsp;&nbsp;•&nbsp;&nbsp;DASHBOARDS&nbsp;&nbsp;•&nbsp;&nbsp;AI WITH HUMAN JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;OPERATING LAYERS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+            <span>ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL SPINE&nbsp;&nbsp;•&nbsp;&nbsp;QUIET
+                AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;WEB SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;INTERNAL
+                TOOLS&nbsp;&nbsp;•&nbsp;&nbsp;DASHBOARDS&nbsp;&nbsp;•&nbsp;&nbsp;AI WITH HUMAN
+                JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;OPERATING LAYERS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+            <span aria-hidden="true">ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL SPINE&nbsp;&nbsp;•&nbsp;&nbsp;QUIET
+                AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;WEB SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;INTERNAL
+                TOOLS&nbsp;&nbsp;•&nbsp;&nbsp;DASHBOARDS&nbsp;&nbsp;•&nbsp;&nbsp;AI WITH HUMAN
+                JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;OPERATING LAYERS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
         </div>
     </div>
 
@@ -1432,8 +1590,10 @@
             </div>
             <div class="chaos-opening reveal">
                 <p class="chapter-kicker">The quiet chaos</p>
-                <h2 class="story-title" id="chaos-title">Businesses rarely break all at once. <em>They leak quietly.</em></h2>
-                <p class="story-lead">A message goes unanswered. A customer waits. A task is repeated because the process lives in someone’s head. Small gaps become the way the business operates.</p>
+                <h2 class="story-title" id="chaos-title">Businesses rarely break all at once. <em>They leak
+                        quietly.</em></h2>
+                <p class="story-lead">A message goes unanswered. A customer waits. A task is repeated because the
+                    process lives in someone’s head. Small gaps become the way the business operates.</p>
             </div>
             <div class="diagnosis-reveal" id="about">
                 <div class="diagnosis-quote reveal">
@@ -1442,9 +1602,13 @@
                 </div>
                 <div class="diagnosis-clear reveal">
                     <p class="chapter-kicker">What Arzware does</p>
-                    <h3>Arzware is a business development and digital innovation company that diagnoses what is blocking progress and creates the right practical solution.</h3>
-                    <p>We study the business, its customers, processes and overlooked opportunities. Then we build, coordinate or connect the smallest useful move.</p>
-                    <div class="method-thread" aria-label="Arzware method"><span>Understand</span><i></i><span>Diagnose</span><i></i><span>Design</span><i></i><span>Build or connect</span><i></i><span>Measure</span></div>
+                    <h3>Arzware is a business development and digital innovation company that diagnoses what is blocking
+                        progress and creates the right practical solution.</h3>
+                    <p>We study the business, its customers, processes and overlooked opportunities. Then we build,
+                        coordinate or connect the smallest useful move.</p>
+                    <div class="method-thread" aria-label="Arzware method">
+                        <span>Understand</span><i></i><span>Diagnose</span><i></i><span>Design</span><i></i><span>Build
+                            or connect</span><i></i><span>Measure</span></div>
                 </div>
             </div>
         </section>
@@ -1453,25 +1617,78 @@
             <div class="formation-intro reveal">
                 <p class="chapter-kicker">The system begins to form</p>
                 <h2 class="story-title" id="formation-title">Disconnected work finds <em>a living structure.</em></h2>
-                <p class="story-lead">A digital spine connects how a business communicates, remembers, moves routine work and sees what is happening.</p>
+                <p class="story-lead">A digital spine connects how a business communicates, remembers, moves routine
+                    work and sees what is happening.</p>
             </div>
             <div class="spine-scene reveal" aria-label="A business system connecting">
-                <svg class="spine-network" viewBox="0 0 1000 700" role="img" aria-label="Messages, customers, data, tasks and people connecting into one system">
+                <svg class="spine-network" viewBox="0 0 1000 700" role="img"
+                    aria-label="Messages, customers, data, tasks and people connecting into one system">
                     <defs>
-                        <linearGradient id="warmSignal" x1="0" x2="1"><stop offset="0" stop-color="#4f87aa" stop-opacity=".8"/><stop offset=".52" stop-color="#b8784a"/><stop offset="1" stop-color="#79513a" stop-opacity=".8"/></linearGradient>
-                        <filter id="signalGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        <linearGradient id="warmSignal" x1="0" x2="1">
+                            <stop offset="0" stop-color="#4f87aa" stop-opacity=".8" />
+                            <stop offset=".52" stop-color="#b8784a" />
+                            <stop offset="1" stop-color="#79513a" stop-opacity=".8" />
+                        </linearGradient>
+                        <filter id="signalGlow">
+                            <feGaussianBlur stdDeviation="5" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
                     </defs>
-                    <g class="network-faint"><path d="M80 100 C250 130 280 280 500 350"/><path d="M110 570 C260 520 330 410 500 350"/><path d="M235 65 C330 180 370 260 500 350"/><path d="M500 350 C650 280 730 150 900 105"/><path d="M500 350 C675 390 735 520 910 580"/><path d="M500 350 C635 325 750 330 930 330"/></g>
-                    <g class="network-signal" filter="url(#signalGlow)"><path d="M80 100 C250 130 280 280 500 350 C650 280 730 150 900 105"/><path d="M110 570 C260 520 330 410 500 350 C675 390 735 520 910 580"/></g>
-                    <g class="network-nodes"><circle cx="80" cy="100" r="7"/><circle cx="110" cy="570" r="7"/><circle cx="235" cy="65" r="7"/><circle class="core-node" cx="500" cy="350" r="16"/><circle cx="900" cy="105" r="7"/><circle cx="930" cy="330" r="7"/><circle cx="910" cy="580" r="7"/></g>
+                    <g class="network-faint">
+                        <path d="M80 100 C250 130 280 280 500 350" />
+                        <path d="M110 570 C260 520 330 410 500 350" />
+                        <path d="M235 65 C330 180 370 260 500 350" />
+                        <path d="M500 350 C650 280 730 150 900 105" />
+                        <path d="M500 350 C675 390 735 520 910 580" />
+                        <path d="M500 350 C635 325 750 330 930 330" />
+                    </g>
+                    <g class="network-signal" filter="url(#signalGlow)">
+                        <path d="M80 100 C250 130 280 280 500 350 C650 280 730 150 900 105" />
+                        <path d="M110 570 C260 520 330 410 500 350 C675 390 735 520 910 580" />
+                    </g>
+                    <g class="network-nodes">
+                        <circle cx="80" cy="100" r="7" />
+                        <circle cx="110" cy="570" r="7" />
+                        <circle cx="235" cy="65" r="7" />
+                        <circle class="core-node" cx="500" cy="350" r="16" />
+                        <circle cx="900" cy="105" r="7" />
+                        <circle cx="930" cy="330" r="7" />
+                        <circle cx="910" cy="580" r="7" />
+                    </g>
                 </svg>
-                <span class="network-label label-message">Messages</span><span class="network-label label-customer">Customers</span><span class="network-label label-data">Data</span><span class="network-label label-spine">Digital spine</span><span class="network-label label-presence">Presence</span><span class="network-label label-operations">Operations</span><span class="network-label label-decisions">Decisions</span>
+                <span class="network-label label-message">Messages</span><span
+                    class="network-label label-customer">Customers</span><span
+                    class="network-label label-data">Data</span><span class="network-label label-spine">Digital
+                    spine</span><span class="network-label label-presence">Presence</span><span
+                    class="network-label label-operations">Operations</span><span
+                    class="network-label label-decisions">Decisions</span>
                 <div class="pulse-caption">The work begins to remember itself.</div>
             </div>
             <div class="system-outcomes condensed-outcomes" id="work">
-                <div class="outcome-story reveal"><span class="outcome-before">Missed inquiries</span><span class="outcome-arrow" aria-hidden="true">→</span><div><h3>Customer journeys that keep context</h3><p>Clearer offers, websites, landing pages, intake and follow-up.</p></div></div>
-                <div class="outcome-story reveal"><span class="outcome-before">Scattered operations</span><span class="outcome-arrow" aria-hidden="true">→</span><div><h3>A business that can see itself</h3><p>CRM-lite systems, dashboards, portals, bookings and internal tools.</p></div></div>
-                <div class="outcome-story reveal"><span class="outcome-before">Repeated work</span><span class="outcome-arrow" aria-hidden="true">→</span><div><h3>Quiet automation</h3><p>Reminders, documents, reports and human-reviewed AI workflows.</p></div></div>
+                <div class="outcome-story reveal"><span class="outcome-before">Missed inquiries</span><span
+                        class="outcome-arrow" aria-hidden="true">→</span>
+                    <div>
+                        <h3>Customer journeys that keep context</h3>
+                        <p>Clearer offers, websites, landing pages, intake and follow-up.</p>
+                    </div>
+                </div>
+                <div class="outcome-story reveal"><span class="outcome-before">Scattered operations</span><span
+                        class="outcome-arrow" aria-hidden="true">→</span>
+                    <div>
+                        <h3>A business that can see itself</h3>
+                        <p>CRM-lite systems, dashboards, portals, bookings and internal tools.</p>
+                    </div>
+                </div>
+                <div class="outcome-story reveal"><span class="outcome-before">Repeated work</span><span
+                        class="outcome-arrow" aria-hidden="true">→</span>
+                    <div>
+                        <h3>Quiet automation</h3>
+                        <p>Reminders, documents, reports and human-reviewed AI workflows.</p>
+                    </div>
+                </div>
                 <p class="example-note reveal">Solution patterns—not claims about completed client projects.</p>
             </div>
         </section>
@@ -1479,17 +1696,24 @@
         <section class="chapter human-opportunity-chapter" id="impact" aria-labelledby="human-title">
             <div class="human-pulse" aria-hidden="true">
                 <svg viewBox="0 0 1000 50" preserveAspectRatio="none">
-                    <path class="pulse-base" d="M0 25 H360 L380 25 L394 8 L410 42 L430 17 L447 25 H620 L636 25 L648 14 L660 36 L674 25 H1000" pathLength="100"/>
-                    <path class="pulse-live" d="M0 25 H360 L380 25 L394 8 L410 42 L430 17 L447 25 H620 L636 25 L648 14 L660 36 L674 25 H1000" pathLength="100"/>
+                    <path class="pulse-base"
+                        d="M0 25 H360 L380 25 L394 8 L410 42 L430 17 L447 25 H620 L636 25 L648 14 L660 36 L674 25 H1000"
+                        pathLength="100" />
+                    <path class="pulse-live"
+                        d="M0 25 H360 L380 25 L394 8 L410 42 L430 17 L447 25 H620 L636 25 L648 14 L660 36 L674 25 H1000"
+                        pathLength="100" />
                     <circle class="pulse-dot" r="4">
-                        <animateMotion dur="4s" repeatCount="indefinite" path="M0 25 H360 L380 25 L394 8 L410 42 L430 17 L447 25 H620 L636 25 L648 14 L660 36 L674 25 H1000"/>
+                        <animateMotion dur="4s" repeatCount="indefinite"
+                            path="M0 25 H360 L380 25 L394 8 L410 42 L430 17 L447 25 H620 L636 25 L648 14 L660 36 L674 25 H1000" />
                     </circle>
                 </svg>
             </div>
             <div class="human-first reveal">
                 <p class="chapter-kicker">Technology with a human pulse</p>
-                <h2 class="story-title story-title-wide" id="human-title">The machine carries the repetition. <em>People keep the judgment.</em></h2>
-                <p class="story-lead">AI and automation support research, knowledge and routine work. People remain responsible for context, privacy, quality and the final decision.</p>
+                <h2 class="story-title story-title-wide" id="human-title">The machine carries the repetition. <em>People
+                        keep the judgment.</em></h2>
+                <p class="story-lead">AI and automation support research, knowledge and routine work. People remain
+                    responsible for context, privacy, quality and the final decision.</p>
             </div>
             <div class="trust-scene reveal">
                 <p class="trust-small">And technology is not the only thing that needs a human chance.</p>
@@ -1497,54 +1721,99 @@
                 <p class="trust-line">Talent is everywhere. Opportunity is not.</p>
             </div>
             <div class="opportunity-clarity reveal">
-                <p>Arzware creates supervised real-project opportunities for Lebanese youth across development, AI, design, research, QA, marketing and operations.</p>
-                <p>Youth gain experience, mentoring and portfolio evidence. Businesses gain research, testing, documentation and supervised execution support.</p>
+                <p>Arzware creates supervised real-project opportunities for Lebanese youth across development, AI,
+                    design, research, QA, marketing and operations.</p>
+                <p>Youth gain experience, mentoring and portfolio evidence. Businesses gain research, testing,
+                    documentation and supervised execution support.</p>
             </div>
-            <div class="roles-river" aria-label="Youth contribution areas"><span>Research</span><span>Development</span><span>Design</span><span>Quality assurance</span><span>AI</span><span>Operations</span><span>Marketing</span></div>
-            <p class="responsibility-statement reveal"><strong>Opportunity never replaces responsibility.</strong> Arzware remains accountable for supervision, privacy, quality and the client outcome. Youth are contributors learning through real work—not cheap labor.</p>
+            <div class="roles-river" aria-label="Youth contribution areas">
+                <span>Research</span><span>Development</span><span>Design</span><span>Quality
+                    assurance</span><span>AI</span><span>Operations</span><span>Marketing</span></div>
+            <p class="responsibility-statement reveal"><strong>Opportunity never replaces responsibility.</strong>
+                Arzware remains accountable for supervision, privacy, quality and the client outcome. Youth are
+                contributors learning through real work—not cheap labor.</p>
         </section>
 
         <section class="chapter community-chapter condensed-community" aria-labelledby="community-title">
             <div class="community-copy reveal">
                 <p class="chapter-kicker">The connected ecosystem</p>
-                <h2 class="story-title" id="community-title">Sometimes progress begins with <em>the right connection.</em></h2>
-                <p class="story-lead">Arzware diagnoses the need, then builds, coordinates, connects—or combines those paths—around one accountable outcome.</p>
+                <h2 class="story-title" id="community-title">Sometimes progress begins with <em>the right
+                        connection.</em></h2>
+                <p class="story-lead">Arzware diagnoses the need, then builds, coordinates, connects—or combines those
+                    paths—around one accountable outcome.</p>
             </div>
             <div class="community-map reveal" aria-label="Arzware community ecosystem">
-                <svg viewBox="0 0 900 620" aria-hidden="true"><g class="community-lines"><path d="M450 310 L120 100"/><path d="M450 310 L185 500"/><path d="M450 310 L365 70"/><path d="M450 310 L725 90"/><path d="M450 310 L790 350"/><path d="M450 310 L670 545"/></g><g class="community-dots"><circle cx="450" cy="310" r="13"/><circle cx="120" cy="100" r="6"/><circle cx="185" cy="500" r="6"/><circle cx="365" cy="70" r="6"/><circle cx="725" cy="90" r="6"/><circle cx="790" cy="350" r="6"/><circle cx="670" cy="545" r="6"/></g></svg>
-                <span class="community-center">Arzware</span><span class="community-name community-business">Businesses</span><span class="community-name community-youth">Youth</span><span class="community-name community-startups">Startups</span><span class="community-name community-agencies">Agencies</span><span class="community-name community-freelancers">Freelancers</span><span class="community-name community-mentors">Mentors</span>
+                <svg viewBox="0 0 900 620" aria-hidden="true">
+                    <g class="community-lines">
+                        <path d="M450 310 L120 100" />
+                        <path d="M450 310 L185 500" />
+                        <path d="M450 310 L365 70" />
+                        <path d="M450 310 L725 90" />
+                        <path d="M450 310 L790 350" />
+                        <path d="M450 310 L670 545" />
+                    </g>
+                    <g class="community-dots">
+                        <circle cx="450" cy="310" r="13" />
+                        <circle cx="120" cy="100" r="6" />
+                        <circle cx="185" cy="500" r="6" />
+                        <circle cx="365" cy="70" r="6" />
+                        <circle cx="725" cy="90" r="6" />
+                        <circle cx="790" cy="350" r="6" />
+                        <circle cx="670" cy="545" r="6" />
+                    </g>
+                </svg>
+                <span class="community-center">Arzware</span><span
+                    class="community-name community-business">Businesses</span><span
+                    class="community-name community-youth">Youth</span><span
+                    class="community-name community-startups">Startups</span><span
+                    class="community-name community-agencies">Agencies</span><span
+                    class="community-name community-freelancers">Freelancers</span><span
+                    class="community-name community-mentors">Mentors</span>
             </div>
         </section>
 
         <div class="signal-strip signal-strip-final" id="closing-signal" aria-label="Arzware capabilities">
             <div class="signal-track">
-                <span>ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;BUSINESS DEVELOPMENT&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL INNOVATION&nbsp;&nbsp;•&nbsp;&nbsp;QUIET AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;HUMAN JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;YOUTH OPPORTUNITY&nbsp;&nbsp;•&nbsp;&nbsp;TRUSTED CONNECTIONS&nbsp;&nbsp;•&nbsp;&nbsp;LIVING SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-                <span aria-hidden="true">ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;BUSINESS DEVELOPMENT&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL INNOVATION&nbsp;&nbsp;•&nbsp;&nbsp;QUIET AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;HUMAN JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;YOUTH OPPORTUNITY&nbsp;&nbsp;•&nbsp;&nbsp;TRUSTED CONNECTIONS&nbsp;&nbsp;•&nbsp;&nbsp;LIVING SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+                <span>ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;BUSINESS DEVELOPMENT&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL
+                    INNOVATION&nbsp;&nbsp;•&nbsp;&nbsp;QUIET AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;HUMAN
+                    JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;YOUTH OPPORTUNITY&nbsp;&nbsp;•&nbsp;&nbsp;TRUSTED
+                    CONNECTIONS&nbsp;&nbsp;•&nbsp;&nbsp;LIVING SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+                <span aria-hidden="true">ARZWARE&nbsp;&nbsp;•&nbsp;&nbsp;BUSINESS
+                    DEVELOPMENT&nbsp;&nbsp;•&nbsp;&nbsp;DIGITAL INNOVATION&nbsp;&nbsp;•&nbsp;&nbsp;QUIET
+                    AUTOMATION&nbsp;&nbsp;•&nbsp;&nbsp;HUMAN JUDGMENT&nbsp;&nbsp;•&nbsp;&nbsp;YOUTH
+                    OPPORTUNITY&nbsp;&nbsp;•&nbsp;&nbsp;TRUSTED CONNECTIONS&nbsp;&nbsp;•&nbsp;&nbsp;LIVING
+                    SYSTEMS&nbsp;&nbsp;•&nbsp;&nbsp;</span>
             </div>
         </div>
 
-        <section class="chapter possibility-chapter condensed-possibility" id="review" aria-labelledby="possibility-title">
+        <section class="chapter possibility-chapter condensed-possibility" id="review"
+            aria-labelledby="possibility-title">
             <div class="possibility-sun" aria-hidden="true"></div>
             <div class="possibility-copy reveal">
                 <p class="chapter-kicker">Possibility</p>
-                <h2 class="story-title story-title-wide" id="possibility-title">Somewhere inside the mess is the system your business has been <em>waiting for.</em></h2>
+                <h2 class="story-title story-title-wide" id="possibility-title">Somewhere inside the mess is the system
+                    your business has been <em>waiting for.</em></h2>
                 <p class="possibility-invitation">Bring us the messy part.</p>
-                <p class="story-lead">A missed lead. A repetitive task. A scattered process. An AI idea that needs structure.</p>
-                <div class="possibility-actions"><a href="https://cal.com/arzware" target="_blank" rel="noopener noreferrer" class="btn-main">Start a Business Improvement Review <span class="btn-arrow" aria-hidden="true">→</span></a><a href="mailto:hello@arzware.net" class="text-link">hello@arzware.net</a></div>
+                <p class="story-lead">A missed lead. A repetitive task. A scattered process. An AI idea that needs
+                    structure.</p>
+                <div class="possibility-actions"><a href="https://cal.com/arzware" target="_blank"
+                        rel="noopener noreferrer" class="btn-main">Start a Business Improvement Review <span
+                            class="btn-arrow" aria-hidden="true">→</span></a><a href="mailto:hello@arzware.net"
+                        class="text-link">hello@arzware.net</a></div>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
         <div class="site-footer-inner">
-            <span><img src="arzware-logo.png?v=2026-06-07-logo" alt="" class="footer-logo">© 2026 Arzware · Lebanon and beyond</span>
+            <span><img src="arzware-logo.png?v=2026-06-07-logo" alt="" class="footer-logo">© 2026 Arzware · Lebanon and
+                beyond</span>
             <a href="#hero">Back to top &uarr;</a>
         </div>
     </footer>
 
     <script type="module">
         import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         const container = document.getElementById('three-container');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1558,13 +1827,14 @@
         const renderer = new THREE.WebGLRenderer({
             antialias: !isMobileViewport,
             alpha: true,
-            powerPreference: 'high-performance'
+            powerPreference: 'high-performance',
+            stencil: false,
+            depth: false
         });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileViewport ? 1.25 : 1.75));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileViewport ? 1.0 : 1.5));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 2.5;
-        renderer.powerPreference = 'high-performance';
+        renderer.toneMappingExposure = isMobileViewport ? 1.6 : 2.2;
         container.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
@@ -1574,35 +1844,24 @@
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
         camera.position.set(0, 0, 5);
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enabled = false;
-
-        // Lights
-        const ambient = new THREE.AmbientLight(0xffeedd, 3);
+        // Lights (consolidated for performance)
+        const ambient = new THREE.AmbientLight(0xffeedd, 3.5);
         scene.add(ambient);
 
-        const keyLight = new THREE.PointLight(0xc4a882, 15, 50);
+        const keyLight = new THREE.PointLight(0xc4a882, 18, 50);
         keyLight.position.set(3, 3, 4);
         scene.add(keyLight);
 
-        const fillLight = new THREE.PointLight(0x4a6fa5, 8, 50);
+        const fillLight = new THREE.PointLight(0x4a6fa5, 10, 50);
         fillLight.position.set(-4, -2, 3);
         scene.add(fillLight);
 
-        const rimLight = new THREE.PointLight(0x8b7355, 10, 50);
-        rimLight.position.set(0, 4, -3);
+        const rimLight = new THREE.PointLight(0x8b7355, 12, 50);
+        rimLight.position.set(0, 2, -3);
         scene.add(rimLight);
 
-        const frontLight = new THREE.PointLight(0xffffff, 12, 40);
-        frontLight.position.set(0, 0, 6);
-        scene.add(frontLight);
-
-        const bottomLight = new THREE.PointLight(0xc4a882, 8, 40);
-        bottomLight.position.set(0, -3, 3);
-        scene.add(bottomLight);
-
         // === SHAPE DEFINITIONS ===
-        const PARTICLE_COUNT = isMobileViewport ? 9000 : 18000;
+        const PARTICLE_COUNT = isMobileViewport ? 6000 : 16000;
         const shapes = [];
         const shapeNames = ['Dodeca', 'Heart', 'Diamond', 'Helix'];
 
@@ -1611,7 +1870,7 @@
             const pos = new Float32Array(count * 3);
             const posAttr = geometry.attributes.position;
             const indexAttr = geometry.index;
-            
+
             // Get triangle data
             const triangles = [];
             const triCount = indexAttr ? indexAttr.count / 3 : posAttr.count / 3;
@@ -1649,7 +1908,7 @@
                 let u = Math.random(), v = Math.random();
                 if (u + v > 1) { u = 1 - u; v = 1 - v; }
                 const w = 1 - u - v;
-                pos[i * 3]     = tri[0].x * w + tri[1].x * u + tri[2].x * v;
+                pos[i * 3] = tri[0].x * w + tri[1].x * u + tri[2].x * v;
                 pos[i * 3 + 1] = tri[0].y * w + tri[1].y * u + tri[2].y * v;
                 pos[i * 3 + 2] = tri[0].z * w + tri[1].z * u + tri[2].z * v;
             }
@@ -1679,13 +1938,13 @@
                 const x = 1.2 * Math.sin(t) * Math.sin(s);
                 let y = 0.8 * Math.cos(s) + 0.4 * Math.cos(t) * Math.sin(s);
                 const z = 1.0 * Math.sin(t) * Math.cos(s) * (1 + 0.3 * Math.sin(t));
-                
+
                 // Heart shape modifier
                 const heartX = 16 * Math.pow(Math.sin(t), 3) / 16;
-                const heartY = (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) / 16;
+                const heartY = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 16;
                 const depth = Math.sin(s) * 0.5;
 
-                pos[i * 3]     = heartX + (Math.random() - 0.5) * scatter;
+                pos[i * 3] = heartX + (Math.random() - 0.5) * scatter;
                 pos[i * 3 + 1] = heartY + (Math.random() - 0.5) * scatter;
                 pos[i * 3 + 2] = depth + (Math.random() - 0.5) * scatter;
             }
@@ -1736,7 +1995,7 @@
                     const idx = (h * helixCount + i) * 3;
                     const t = (i / helixCount) * Math.PI * 6 - Math.PI * 3;
                     const r = 0.9;
-                    pos[idx]     = r * Math.cos(t + offset) + (Math.random() - 0.5) * 0.04;
+                    pos[idx] = r * Math.cos(t + offset) + (Math.random() - 0.5) * 0.04;
                     pos[idx + 1] = t * 0.34 + (Math.random() - 0.5) * 0.04;
                     pos[idx + 2] = r * Math.sin(t + offset) + (Math.random() - 0.5) * 0.04;
 
@@ -1745,7 +2004,7 @@
                         const rungT = Math.floor(i / 200) * 200;
                         const rungAngle = (rungT / helixCount) * Math.PI * 6 - Math.PI * 3;
                         const frac = (i % 200) / 10;
-                        pos[idx]     = r * Math.cos(rungAngle) * (1 - frac) + r * Math.cos(rungAngle + Math.PI) * frac;
+                        pos[idx] = r * Math.cos(rungAngle) * (1 - frac) + r * Math.cos(rungAngle + Math.PI) * frac;
                         pos[idx + 1] = t * 0.34 + (Math.random() - 0.5) * 0.04;
                         pos[idx + 2] = r * Math.sin(rungAngle) * (1 - frac) + r * Math.sin(rungAngle + Math.PI) * frac;
                     }
@@ -1808,13 +2067,13 @@
         // Initialize with first shape
         positions.set(shapes[0]);
 
-        const c1 = new THREE.Color(0xf0d9b5);
-        const c2 = new THREE.Color(0xd4a574);
-        const c3 = new THREE.Color(0x7eb8e0);
+        const c1 = new THREE.Color(0xb8b2aa);
+        const c2 = new THREE.Color(0xa39688);
+        const c3 = new THREE.Color(0x8899a4);
 
         for (let i = 0; i < PARTICLE_COUNT; i++) {
             const ratio = i / PARTICLE_COUNT;
-            const color = ratio < 0.5 
+            const color = ratio < 0.5
                 ? c1.clone().lerp(c2, ratio * 2)
                 : c2.clone().lerp(c3, (ratio - 0.5) * 2);
             colors[i * 3] = color.r;
@@ -1914,7 +2173,7 @@
                     float d = length(gl_PointCoord - vec2(0.5));
                     if (d > 0.5) discard;
                     float alpha = smoothstep(0.5, 0.0, d) * vAlpha;
-                    vec3 brightColor = vColor * 2.7 + 0.22;
+                    vec3 brightColor = vColor * 1.9 + 0.14;
                     gl_FragColor = vec4(brightColor, alpha);
                 }
             `,
@@ -1932,7 +2191,7 @@
         let targetShape = 0;
         let morphProgress = 0;
         let isMorphing = false;
-        const morphDuration = 2.5;
+        const morphDuration = 2.0;
         let morphStartTime = 0;
         const clock = new THREE.Clock();
 
@@ -1966,13 +2225,13 @@
         // Morph progress bar
         const morphProgressEl = document.getElementById('morph-progress');
         let morphTimer = 0;
-        const morphInterval = 5;
+        const morphInterval = 4;
 
-        // Auto-morph every 5 seconds
+        // Auto-morph every 3.5 seconds
         let autoMorphInterval = prefersReducedMotion ? null : setInterval(() => {
             const next = (currentShape + 1) % shapes.length;
             startMorph(next);
-        }, 5000);
+        }, 4000);
 
         // Click dots to morph
         dots.forEach(dot => {
@@ -1983,7 +2242,7 @@
                 autoMorphInterval = prefersReducedMotion ? null : setInterval(() => {
                     const next = (currentShape + 1) % shapes.length;
                     startMorph(next);
-                }, 5000);
+                }, 4000);
             });
         });
 
@@ -2096,25 +2355,21 @@
         const _localMouse = new THREE.Vector3();
         const _intersectPoint = new THREE.Vector3();
 
-        function easeInOutCubic(t) {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        function easeOutQuart(t) {
+            return 1 - Math.pow(1 - t, 4);
         }
 
         let lastUIUpdate = -1;
 
-        let lastRenderedFrame = 0;
+        const cachedIsMobile = isMobileViewport;
 
         function animate(frameTime = 0) {
             if (!prefersReducedMotion) requestAnimationFrame(animate);
             const heroVisualOpacity = window.__heroVisualOpacity ?? 1;
 
-            // The hero disappears after the first viewport. Avoid spending GPU time on
-            // an invisible scene, and use a calm 30fps cadence on smaller devices.
+            // Skip rendering when hero is not visible
             if (document.hidden || heroVisualOpacity <= 0.015) return;
-            if (!prefersReducedMotion && isMobileViewport && frameTime - lastRenderedFrame < 32) return;
-            lastRenderedFrame = frameTime;
 
-            controls.update();
             const elapsed = clock.getElapsedTime();
             material.uniforms.uTime.value = elapsed;
 
@@ -2135,7 +2390,7 @@
 
             if (isMorphing) {
                 const rawProgress = Math.min((elapsed - morphStartTime) / morphDuration, 1);
-                morphProgress = easeInOutCubic(rawProgress);
+                morphProgress = easeOutQuart(rawProgress);
                 material.uniforms.uMorph.value = morphProgress;
 
                 const srcPositions = shapes[currentShape];
@@ -2175,16 +2430,12 @@
                 }
             }
 
-            particles.rotation.set(0, 0, 0);
-            particles.position.set(0, 0, 0);
-            const isMobile = window.innerWidth <= 768;
-            particles.scale.setScalar(isMobile ? 0.82 : 1);
+            particles.scale.setScalar(cachedIsMobile ? 0.82 : 1);
 
-            // Light animation
+            // Light animation (simplified)
             const sinT = Math.sin(elapsed * 0.2);
-            const cosT = Math.cos(elapsed * 0.2);
             keyLight.position.x = sinT * 4;
-            keyLight.position.z = cosT * 4;
+            keyLight.position.z = Math.cos(elapsed * 0.2) * 4;
 
             // Update morph progress bar
             if (!isMorphing) {
@@ -2197,13 +2448,17 @@
             renderer.render(scene, camera);
         }
 
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth <= 768 ? 1.25 : 1.75));
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
-        });
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth <= 768 ? 1.0 : 1.5));
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
+            }, 100);
+        }, { passive: true });
 
         animate();
     </script>
@@ -2290,4 +2545,5 @@
         });
     </script>
 </body>
+
 </html>

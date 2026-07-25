@@ -46,10 +46,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid #f0d9b5; outline-offs
 }
 .nav-link.nav-cta::after { display: none; }
 .menu-toggle {
-  display: none; border: 1px solid var(--c-line); background: rgba(14,14,14,.74);
-  color: var(--c-text); border-radius: 999px; padding: .7rem 1rem;
-  font: 500 .7rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase;
+  display: none; border: none; background: transparent;
+  color: var(--c-text); padding: .5rem; cursor: pointer;
 }
+.menu-toggle svg { width: 28px; height: 28px; }
 .hero {
   max-width: 760px;
   padding: clamp(1.5rem,4vh,3.5rem) clamp(1.5rem,6vw,6rem) clamp(2.5rem,5vh,4.5rem);
@@ -71,8 +71,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid #f0d9b5; outline-offs
 .hero-difference strong { color: var(--c-accent); font-weight: 500; }
 .hero-actions { flex-wrap: wrap; }
 .btn-main, .btn-ghost { display: inline-flex; align-items: center; justify-content: center; }
-.btn-main { background: rgba(14,14,14,.36); }
-.hero .btn-main, .hero .btn-ghost { backdrop-filter: blur(12px); }
 .hero-text-link {
   display: inline-flex;
   align-items: center;
