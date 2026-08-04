@@ -8,3 +8,8 @@ build/
 !.env.example
 .DS_Store
 *.log
+
+# Local responsiveness and Lighthouse verification artifacts
+scratch/
+package.json
+package-lock.json
