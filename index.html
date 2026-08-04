@@ -1726,9 +1726,12 @@
                 <p>Youth gain experience, mentoring and portfolio evidence. Businesses gain research, testing,
                     documentation and supervised execution support.</p>
             </div>
-            <div class="roles-river" aria-label="Youth contribution areas">
-                <span>Research</span><span>Development</span><span>Design</span><span>Quality
-                    assurance</span><span>AI</span><span>Operations</span><span>Marketing</span></div>
+            <div class="roles-river-wrap" aria-label="Youth contribution areas">
+                <div class="roles-river">
+                    <span>Research</span><span>Development</span><span>Design</span><span>Quality assurance</span><span>AI</span><span>Operations</span><span>Marketing</span>
+                    <span aria-hidden="true">Research</span><span aria-hidden="true">Development</span><span aria-hidden="true">Design</span><span aria-hidden="true">Quality assurance</span><span aria-hidden="true">AI</span><span aria-hidden="true">Operations</span><span aria-hidden="true">Marketing</span>
+                </div>
+            </div>
             <p class="responsibility-statement reveal"><strong>Opportunity never replaces responsibility.</strong>
                 Arzware remains accountable for supervision, privacy, quality and the client outcome. Youth are
                 contributors learning through real work—not cheap labor.</p>
@@ -1866,16 +1869,16 @@
         const shapeNames = ['Dodeca', 'Heart', 'Diamond', 'Helix'];
 
         // Helper: sample points on geometry surface
+        const _triTmp = new THREE.Triangle();
         function sampleGeometry(geometry, count) {
             const pos = new Float32Array(count * 3);
             const posAttr = geometry.attributes.position;
             const indexAttr = geometry.index;
 
-            // Get triangle data
-            const triangles = [];
             const triCount = indexAttr ? indexAttr.count / 3 : posAttr.count / 3;
             const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
-            const areas = [];
+            const areas = new Float32Array(triCount);
+            const triCoords = new Float32Array(triCount * 9);
             let totalArea = 0;
 
             for (let i = 0; i < triCount; i++) {
@@ -1890,27 +1893,31 @@
                 vA.fromBufferAttribute(posAttr, a);
                 vB.fromBufferAttribute(posAttr, b);
                 vC.fromBufferAttribute(posAttr, c);
-                const area = new THREE.Triangle(vA.clone(), vB.clone(), vC.clone()).getArea();
-                areas.push(area);
+                _triTmp.set(vA, vB, vC);
+                const area = _triTmp.getArea();
+                areas[i] = area;
                 totalArea += area;
-                triangles.push([vA.clone(), vB.clone(), vC.clone()]);
+
+                const idx = i * 9;
+                triCoords[idx] = vA.x; triCoords[idx + 1] = vA.y; triCoords[idx + 2] = vA.z;
+                triCoords[idx + 3] = vB.x; triCoords[idx + 4] = vB.y; triCoords[idx + 5] = vB.z;
+                triCoords[idx + 6] = vC.x; triCoords[idx + 7] = vC.y; triCoords[idx + 8] = vC.z;
             }
 
-            // Weighted random sampling
             for (let i = 0; i < count; i++) {
                 let r = Math.random() * totalArea;
                 let triIdx = 0;
-                for (let j = 0; j < areas.length; j++) {
+                for (let j = 0; j < triCount; j++) {
                     r -= areas[j];
                     if (r <= 0) { triIdx = j; break; }
                 }
-                const tri = triangles[triIdx];
+                const base = triIdx * 9;
                 let u = Math.random(), v = Math.random();
                 if (u + v > 1) { u = 1 - u; v = 1 - v; }
                 const w = 1 - u - v;
-                pos[i * 3] = tri[0].x * w + tri[1].x * u + tri[2].x * v;
-                pos[i * 3 + 1] = tri[0].y * w + tri[1].y * u + tri[2].y * v;
-                pos[i * 3 + 2] = tri[0].z * w + tri[1].z * u + tri[2].z * v;
+                pos[i * 3]     = triCoords[base]     * w + triCoords[base + 3] * u + triCoords[base + 6] * v;
+                pos[i * 3 + 1] = triCoords[base + 1] * w + triCoords[base + 4] * u + triCoords[base + 7] * v;
+                pos[i * 3 + 2] = triCoords[base + 2] * w + triCoords[base + 5] * u + triCoords[base + 8] * v;
             }
             return pos;
         }
@@ -2071,14 +2078,17 @@
         const c2 = new THREE.Color(0xa39688);
         const c3 = new THREE.Color(0x8899a4);
 
+        const _tmpCol = new THREE.Color();
         for (let i = 0; i < PARTICLE_COUNT; i++) {
             const ratio = i / PARTICLE_COUNT;
-            const color = ratio < 0.5
-                ? c1.clone().lerp(c2, ratio * 2)
-                : c2.clone().lerp(c3, (ratio - 0.5) * 2);
-            colors[i * 3] = color.r;
-            colors[i * 3 + 1] = color.g;
-            colors[i * 3 + 2] = color.b;
+            if (ratio < 0.5) {
+                _tmpCol.copy(c1).lerp(c2, ratio * 2);
+            } else {
+                _tmpCol.copy(c2).lerp(c3, (ratio - 0.5) * 2);
+            }
+            colors[i * 3] = _tmpCol.r;
+            colors[i * 3 + 1] = _tmpCol.g;
+            colors[i * 3 + 2] = _tmpCol.b;
             sizes[i] = 0.016 + Math.random() * 0.025;
             randoms[i] = Math.random();
         }
@@ -2349,8 +2359,7 @@
             mouseOnScreen = false;
         });
 
-        // === ANIMATION ===
-        // Pre-allocate reusable objects to avoid GC pressure
+        // === ANIMATION LIFECYCLE MANAGEMENT ===
         const _invMatrix = new THREE.Matrix4();
         const _localMouse = new THREE.Vector3();
         const _intersectPoint = new THREE.Vector3();
@@ -2360,29 +2369,76 @@
         }
 
         let lastUIUpdate = -1;
+        let animFrameId = null;
+        let isPageVisible = !document.hidden;
+        let isHeroInView = true;
+        let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        const cachedIsMobile = isMobileViewport;
+        // Media Query listener for prefers-reduced-motion
+        const reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+        function handleReducedMotionChange(e) {
+            isReducedMotion = e.matches;
+            if (isReducedMotion) {
+                if (autoMorphInterval) { clearInterval(autoMorphInterval); autoMorphInterval = null; }
+                stopAnimation();
+                renderSingleFrame();
+            } else {
+                if (!autoMorphInterval) {
+                    autoMorphInterval = setInterval(() => {
+                        const next = (currentShape + 1) % shapes.length;
+                        startMorph(next);
+                    }, 4000);
+                }
+                updateAnimationLifecycle();
+            }
+        }
+        if (reducedMotionMQ.addEventListener) {
+            reducedMotionMQ.addEventListener('change', handleReducedMotionChange);
+        } else if (reducedMotionMQ.addListener) {
+            reducedMotionMQ.addListener(handleReducedMotionChange);
+        }
 
-        function animate(frameTime = 0) {
-            if (!prefersReducedMotion) requestAnimationFrame(animate);
+        function renderSingleFrame() {
+            renderer.render(scene, camera);
+        }
+
+        function updateAnimationLifecycle() {
+            const shouldAnimate = !isReducedMotion && isPageVisible && isHeroInView;
+            if (shouldAnimate) {
+                startAnimation();
+            } else {
+                stopAnimation();
+            }
+        }
+
+        function startAnimation() {
+            if (!animFrameId && !isReducedMotion) {
+                clock.start();
+                animFrameId = requestAnimationFrame(loop);
+            }
+        }
+
+        function stopAnimation() {
+            if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
+        }
+
+        function loop() {
+            animFrameId = requestAnimationFrame(loop);
             const heroVisualOpacity = window.__heroVisualOpacity ?? 1;
-
-            // Skip rendering when hero is not visible
-            if (document.hidden || heroVisualOpacity <= 0.015) return;
 
             const elapsed = clock.getElapsedTime();
             material.uniforms.uTime.value = elapsed;
 
-            // Smooth mouse activation
             const mouseTarget = mouseOnScreen ? 1 : 0;
             mouseActiveSmooth += (mouseTarget - mouseActiveSmooth) * 0.08;
             material.uniforms.uMouseActive.value = mouseActiveSmooth * heroVisualOpacity;
 
-            // Update mouse 3D position via raycasting onto a plane at z=0
             if (hasFinePointer) {
                 raycaster.setFromCamera(mouseNDC, camera);
                 raycaster.ray.intersectPlane(mousePlane, _intersectPoint);
-                // Transform to particle local space (reuse matrices)
                 _invMatrix.copy(particles.matrixWorld).invert();
                 _localMouse.copy(_intersectPoint).applyMatrix4(_invMatrix);
                 material.uniforms.uMouse3D.value.copy(_localMouse);
@@ -2398,7 +2454,6 @@
                 const posArray = geometry.attributes.position.array;
                 const len = PARTICLE_COUNT * 3;
 
-                // Optimized lerp loop
                 for (let i = 0; i < len; i++) {
                     posArray[i] = srcPositions[i] + (tgtPositions[i] - srcPositions[i]) * morphProgress;
                 }
@@ -2412,12 +2467,10 @@
                     lastUIUpdate = -1;
                 }
 
-                // Update UI and morph-name at midpoint (only once)
                 if (rawProgress > 0.4 && rawProgress < 0.6 && lastUIUpdate !== targetShape) {
                     lastUIUpdate = targetShape;
                     updateUI(targetShape);
 
-                    // Swap morph-name and quote text mid-morph, then fade back in
                     if (!labelUpdatedForMorph && morphNameEl) {
                         labelUpdatedForMorph = true;
                         morphNameEl.textContent = objectCopy[targetShape].title;
@@ -2430,14 +2483,13 @@
                 }
             }
 
-            particles.scale.setScalar(cachedIsMobile ? 0.82 : 1);
+            const isMobileNow = window.innerWidth <= 768;
+            particles.scale.setScalar(isMobileNow ? 0.82 : 1);
 
-            // Light animation (simplified)
             const sinT = Math.sin(elapsed * 0.2);
             keyLight.position.x = sinT * 4;
             keyLight.position.z = Math.cos(elapsed * 0.2) * 4;
 
-            // Update morph progress bar
             if (!isMorphing) {
                 const barProgress = ((elapsed % morphInterval) / morphInterval) * 100;
                 if (morphProgressEl) morphProgressEl.style.width = barProgress + '%';
@@ -2448,23 +2500,72 @@
             renderer.render(scene, camera);
         }
 
+        // Visibility API
+        document.addEventListener('visibilitychange', () => {
+            isPageVisible = !document.hidden;
+            updateAnimationLifecycle();
+        });
+
+        // IntersectionObserver on #hero
+        const heroElement = document.getElementById('hero');
+        if (heroElement && 'IntersectionObserver' in window) {
+            const heroObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    isHeroInView = entry.isIntersecting;
+                    updateAnimationLifecycle();
+                });
+            }, { threshold: 0.01 });
+            heroObserver.observe(heroElement);
+        }
+
+        // Resize and Orientation change
+        function handleResize() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            const targetDPR = Math.min(window.devicePixelRatio, w <= 768 ? 1.0 : 1.5);
+            renderer.setPixelRatio(targetDPR);
+            renderer.setSize(w, h);
+            if (material.uniforms.uPixelRatio) {
+                material.uniforms.uPixelRatio.value = targetDPR;
+            }
+            if (isReducedMotion) {
+                renderSingleFrame();
+            }
+        }
+
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth <= 768 ? 1.0 : 1.5));
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
-            }, 100);
+            resizeTimeout = setTimeout(handleResize, 100);
         }, { passive: true });
+        window.addEventListener('orientationchange', handleResize);
 
-        animate();
+        // WebGL Context Lost & Restored
+        const canvasEl = renderer.domElement;
+        canvasEl.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            stopAnimation();
+        }, false);
+        canvasEl.addEventListener('webglcontextrestored', () => {
+            handleResize();
+            if (isReducedMotion) {
+                renderSingleFrame();
+            } else {
+                updateAnimationLifecycle();
+            }
+        }, false);
+
+        // Initial setup
+        if (isReducedMotion) {
+            renderSingleFrame();
+        } else {
+            updateAnimationLifecycle();
+        }
     </script>
 
     <script>
-
         const heroVisuals = [
             document.getElementById('three-container')
         ];
@@ -2508,7 +2609,6 @@
         function animateBlur() {
             smoothX += (mouseX - smoothX) * 0.1;
             smoothY += (mouseY - smoothY) * 0.1;
-            // Only update DOM when value actually changes (rounded to 1 decimal)
             const newX = (smoothX / window.innerWidth * 100).toFixed(1) + '%';
             const newY = (smoothY / window.innerHeight * 100).toFixed(1) + '%';
             if (newX !== lastBlurX || newY !== lastBlurY) {
@@ -2521,27 +2621,67 @@
         }
         if (blurLayer && window.innerWidth > 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) animateBlur();
 
+        // Accessible Mobile Menu Handler
         const menuToggle = document.querySelector('.menu-toggle');
         const siteMenu = document.getElementById('site-menu');
+
+        function openMenu() {
+            siteMenu?.classList.add('is-open');
+            document.body.classList.add('menu-open');
+            menuToggle?.setAttribute('aria-expanded', 'true');
+            menuToggle?.setAttribute('aria-label', 'Close navigation menu');
+
+            const focusables = siteMenu?.querySelectorAll('a[href], button:not([disabled]), [tabindex="0"]');
+            if (focusables && focusables.length > 0) {
+                focusables[0].focus();
+            }
+        }
 
         function closeMenu() {
             siteMenu?.classList.remove('is-open');
             document.body.classList.remove('menu-open');
             menuToggle?.setAttribute('aria-expanded', 'false');
-            if (menuToggle) menuToggle.textContent = 'Menu';
+            menuToggle?.setAttribute('aria-label', 'Toggle navigation menu');
+            menuToggle?.focus();
         }
 
         menuToggle?.addEventListener('click', () => {
-            const isOpen = !siteMenu.classList.contains('is-open');
-            siteMenu.classList.toggle('is-open', isOpen);
-            document.body.classList.toggle('menu-open', isOpen);
-            menuToggle.setAttribute('aria-expanded', String(isOpen));
-            menuToggle.textContent = isOpen ? 'Close' : 'Menu';
+            const isOpen = siteMenu?.classList.contains('is-open');
+            if (isOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         });
 
         siteMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+
+        document.addEventListener('keydown', (e) => {
+            if (!siteMenu?.classList.contains('is-open')) return;
+
+            if (e.key === 'Escape') {
+                closeMenu();
+                return;
+            }
+
+            if (e.key === 'Tab') {
+                const focusables = Array.from(siteMenu.querySelectorAll('a[href], button:not([disabled]), [tabindex="0"]'));
+                if (focusables.length === 0) return;
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) closeMenu();
+            if (window.innerWidth > 768 && siteMenu?.classList.contains('is-open')) closeMenu();
         });
     </script>
 </body>
